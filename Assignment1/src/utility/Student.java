@@ -11,7 +11,7 @@ import java.util.ArrayList;
  * 
  * @author karan
  */
-public class Student {
+public class Student extends Record {
 
 	private String recordId;
 	private String firstName;
@@ -19,6 +19,19 @@ public class Student {
 	private ArrayList<String> courseRegistered;
 	private String status;
 	private String statusDate;
+	static int id = 100;
+
+	public Student(String firstName, String lastName, ArrayList<String> courseRegistered, String status, String statusDate) {
+
+		super();
+		this.recordId = "ST" + Student.id;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.courseRegistered = courseRegistered;
+		this.status = status;
+		this.statusDate = statusDate;
+		Student.id++;
+	}
 	
 	public String getRecordId() {
 		return recordId;
