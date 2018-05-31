@@ -3,7 +3,10 @@
  */
 package server;
 
+import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 
@@ -46,6 +49,22 @@ public class MTLServer extends UnicastRemoteObject implements CenterServer {
 		// TODO Auto-generated method stub
 		return false;
 	}
+	
+	/**
+	 * Main Method.
+	 * 
+	 * @param args (No arguments are needed to launch)
+	 */
+	public static void main(String[] args) {
+		
+		try {
+			Registry registry = LocateRegistry.createRegistry(1234);
+			MTLServer montreal = new MTLServer();
+			registry.bind("MTL", montreal);
 
-
+			System.out.println("Montreal Server is started");
+		} catch (RemoteException e)			{	e.printStackTrace();		}
+		  catch (AlreadyBoundException e) 	{	e.printStackTrace();		}
+		  catch (Exception e) 				{	e.printStackTrace();		}
+	}
 }
