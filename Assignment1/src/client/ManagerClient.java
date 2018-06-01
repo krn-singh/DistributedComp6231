@@ -348,7 +348,7 @@ public class ManagerClient {
 		if (validateManager(managerId)) {
 			ManagerClient client = new ManagerClient(managerId);
 			client.fetchServer("MTL", MTL_SERVER_ID);
-			client.clientLogger.mLogger.info("Manager: " + managerId + "logged in." + '\n');
+			client.clientLogger.mLogger.info("Manager: " + managerId + " logged in." + '\n');
 			client.mainMenu(scan, menu);
 		} else {
 			System.out.println("Invalid Login Id..... Terminating the system");

@@ -1,8 +1,6 @@
 package logger;
 
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
-import java.util.logging.FileHandler;
+import java.util.logging.*;
 
 public class LogManager {
 	public Logger mLogger;
@@ -11,8 +9,9 @@ public class LogManager {
 	public LogManager(String name) {
 		try {
 			mLogger = Logger.getLogger(LogManager.class.getName());
+			fileManager = new FileHandler(name + ".log", true);
+			mLogger.addHandler(fileManager);
 			mLogger.setUseParentHandlers(false);
-			fileManager = new FileHandler(name+".log", true);
 			SimpleFormatter format = new SimpleFormatter();
 			fileManager.setFormatter(format);
 		} catch(Exception e) {
