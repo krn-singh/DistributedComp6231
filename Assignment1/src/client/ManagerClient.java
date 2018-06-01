@@ -10,6 +10,8 @@ import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import logger.LogManager;
+
 import server.CenterServer;
 
 /**
@@ -36,6 +38,12 @@ public class ManagerClient {
 	private String recordId;
 	private String fieldName;
 	private String newValue;
+	private LogManager clientLogger = null;
+	
+	public ManagerClient(String managerId) {
+		this.recordId = managerId;
+		this.clientLogger = new LogManager(managerId); 
+	}
 
 	public void fetchServer(String serverName, int serverId) {
 		
@@ -57,7 +65,7 @@ public class ManagerClient {
 	 * @param managerId Manager Login ID
 	 * @return True/False whether the validation was successfully or not
 	 */
-	public boolean validateManager(String managerId) {
+	public static boolean validateManager(String managerId) {
 		
 		try {
 			if (managerId.length() != 7) {	return false;	}
@@ -81,7 +89,7 @@ public class ManagerClient {
 	 * 
 	 * @param scan Simple text scanner for user input
 	 */
-	public void fetchTRecord(Scanner scan) {
+	public void createTRecord(Scanner scan) {
 		
 		try {
 			System.out.println("Enter First Name:");
@@ -95,6 +103,9 @@ public class ManagerClient {
 			System.out.println("Enter Specialization");
 			specialization = scan.nextLine();
 			location = locationMenu(scan);
+			clientLogger.mLogger.info("Creating Teacher Record with First Name: "+ firstName + " Last name: "
+										+ lastName + " Address: " + address + " Phone number: " + phone
+										+ " Specialization: " + specialization + '\n');
 			
 		} catch (Exception e) {	e.printStackTrace();		}
 	}
@@ -104,7 +115,7 @@ public class ManagerClient {
 	 * 
 	 * @param scan Simple text scanner for user input
 	 */
-	public void fetchSRecord(Scanner scan) {
+	public void createSRecord(Scanner scan) {
 		
 		try {
 			System.out.println("Enter First Name:");
@@ -115,6 +126,9 @@ public class ManagerClient {
 			status = statusMenu(scan);
 			System.out.println("Enter Status Date (dd/mm/yyyy)");
 			statusDate = scan.nextLine();
+			clientLogger.mLogger.info("Creating Student Record with First Name: "+ firstName + " Last name: "
+					+ lastName + " Course: " + courseRegistered + " Status: " + status
+					+ " Status Date: " + statusDate + '\n');
 		} catch (Exception e) {	e.printStackTrace();		}
 	}
 	
@@ -256,6 +270,7 @@ public class ManagerClient {
 			fieldName = scan.nextLine();
 			System.out.println("Enter the new value");
 			newValue = scan.nextLine();
+			clientLogger.mLogger.info("Editing Record with ID:"+ recordId + '\n');
 		} catch (Exception e) {	e.printStackTrace();		}
 	}
 	
@@ -280,11 +295,11 @@ public class ManagerClient {
 			
 			switch (option) {
 			case "1":
-				fetchTRecord(scan);
+				createTRecord(scan);
 				break;
 
 			case "2":
-				fetchSRecord(scan);
+				createSRecord(scan);
 				break;
 				
 			case "3":
@@ -296,11 +311,13 @@ public class ManagerClient {
 				break;
 				
 			case "5":
+				clientLogger.mLogger.info("Logged Out"+ '\n');
 				System.out.println("Good Bye");
 				System.exit(0);
 				break;
 
 			default:
+				clientLogger.mLogger.info("Client entered Invalid Option: "+ option + '\n');
 				System.out.println("Invalid option. Try again");
 				mainMenu(scan, menu);
 				break;
@@ -316,9 +333,6 @@ public class ManagerClient {
 	 */
 	public static void main(String[] args) {
 		
-		ManagerClient client = new ManagerClient();
-		client.fetchServer("MTL", MTL_SERVER_ID);
-		
 		Scanner scan = new Scanner(System.in);
 		
 		StringBuffer menu = new StringBuffer("Select the following options:\n" + 
@@ -331,7 +345,10 @@ public class ManagerClient {
 		System.out.println("Enter the Manager Id");
 		String managerId = scan.nextLine();
 		
-		if (client.validateManager(managerId)) {
+		if (validateManager(managerId)) {
+			ManagerClient client = new ManagerClient(managerId);
+			client.fetchServer("MTL", MTL_SERVER_ID);
+			client.clientLogger.mLogger.info("Manager: " + managerId + "logged in." + '\n');
 			client.mainMenu(scan, menu);
 		} else {
 			System.out.println("Invalid Login Id..... Terminating the system");

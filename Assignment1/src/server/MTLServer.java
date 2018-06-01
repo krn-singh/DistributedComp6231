@@ -12,6 +12,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import logger.LogManager;
 
 import utility.Record;
 import utility.Teacher;
@@ -26,11 +27,13 @@ public class MTLServer extends UnicastRemoteObject implements CenterServer {
 
 	public static HashMap<String, ArrayList<Record>> mtlDB;
 	private static int count;
+	private LogManager mtlLogger;
 
 	public MTLServer() throws Exception {
 		super();
 		mtlDB = new HashMap<String, ArrayList<Record>>();
 		count = 0;
+		mtlLogger = new LogManager("MTL");
 	}
 
 	@Override
@@ -52,15 +55,22 @@ public class MTLServer extends UnicastRemoteObject implements CenterServer {
 			System.out.println("Map key & value" + map.getKey() + "," + map.getValue().size());
 
 		}
-
-		return false;
+		mtlLogger.mLogger.info("Creating Teacher Record with First Name: "+ firstName + " Last name: "
+				+ lastName + " Address: " + address + " Phone number: " + phone
+				+ " Specialization: " + specialization + '\n');
+		
+		return true;
 	}
 
 	@Override
 	public boolean createSRecord(String firstName, String lastName, ArrayList<String> courseRegistered, String status,
 			String statusDate) throws RemoteException {
 		// TODO Auto-generated method stub
-		return false;
+		
+		mtlLogger.mLogger.info("Creating Student Record with First Name: "+ firstName + " Last name: "
+				+ lastName + " Course: " + courseRegistered + " Status: " + status
+				+ " Status Date: " + statusDate + '\n');
+		return true;
 	}
 
 	@Override
@@ -80,14 +90,18 @@ public class MTLServer extends UnicastRemoteObject implements CenterServer {
 			}
 		}
 		System.out.println("\nTotal No.of records retrieved:" + count);
+		
+		mtlLogger.mLogger.info("Get record count query is used, total count is : " + count + '\n');
 		return null;
 	}
 
 	@Override
 	public boolean editRecord(String recordId, String fieldName, String newValue) throws RemoteException {
+		// TODO add previous value here;
+		mtlLogger.mLogger.info("Editing Record with ID:"+ recordId + " previous value was: " + " "  + "new value is: " + newValue +'\n');
 		// TODO Auto-generated method stub
-
-		return false;
+		
+		return true;
 	}
 
 	// static user defined methods
