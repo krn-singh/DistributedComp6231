@@ -25,9 +25,6 @@ public class MTLServer extends UnicastRemoteObject implements CenterServer {
 	@Override
 	public boolean createTRecord(String firstName, String lastName, String address, String phone, String specialization,
 			String location) throws RemoteException {
-		System.out.println(firstName+lastName+address+phone+specialization+location);
-		System.out.println(firstName+lastName+address+phone+specialization+location);
-		System.out.println(firstName+lastName+address+phone+specialization+location);
 		return false;
 	}
 

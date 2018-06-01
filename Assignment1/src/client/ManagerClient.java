@@ -33,6 +33,9 @@ public class ManagerClient {
 	private String status;
 	private String statusDate;
 	private ArrayList<String> courseRegistered;
+	private String recordId;
+	private String fieldName;
+	private String newValue;
 
 	public void fetchServer(String serverName, int serverId) {
 		
@@ -93,6 +96,25 @@ public class ManagerClient {
 			specialization = scan.nextLine();
 			location = locationMenu(scan);
 			
+		} catch (Exception e) {	e.printStackTrace();		}
+	}
+	
+	/**
+	 * Prompts the user for Student attributes.
+	 * 
+	 * @param scan Simple text scanner for user input
+	 */
+	public void fetchSRecord(Scanner scan) {
+		
+		try {
+			System.out.println("Enter First Name:");
+			firstName = scan.nextLine();
+			System.out.println("Enter Last name");
+			lastName = scan.nextLine();
+			courseRegistered = courseMenu(scan, new ArrayList<String>());
+			status = statusMenu(scan);
+			System.out.println("Enter Status Date (dd/mm/yyyy)");
+			statusDate = scan.nextLine();
 		} catch (Exception e) {	e.printStackTrace();		}
 	}
 	
@@ -224,22 +246,16 @@ public class ManagerClient {
 		return courseList;
 	}
 	
-	/**
-	 * Prompts the user for Teacher attributes.
-	 * 
-	 * @param scan Simple text scanner for user input
-	 */
-	public void fetchSRecord(Scanner scan) {
+	public void editRecord(Scanner scan) {
 		
 		try {
-			System.out.println("Enter First Name:");
-			firstName = scan.nextLine();
-			System.out.println("Enter Last name");
-			lastName = scan.nextLine();
-			courseRegistered = courseMenu(scan, new ArrayList<String>());
-			status = statusMenu(scan);
-			System.out.println("Enter Status Date (dd/mm/yyyy)");
-			statusDate = scan.nextLine();
+			System.out.println("Enter the Record Id");
+			recordId = scan.nextLine();
+			System.out.println("Enter the field name which is ('address', 'phone' and 'location' for TeacherRecord)\n"
+							 +"and ('course registered', 'status' and 'status date' for StudentRecord)");
+			fieldName = scan.nextLine();
+			System.out.println("Enter the new value");
+			newValue = scan.nextLine();
 		} catch (Exception e) {	e.printStackTrace();		}
 	}
 	
@@ -272,7 +288,7 @@ public class ManagerClient {
 				break;
 				
 			case "3":
-				
+				editRecord(scan);
 				break;
 
 			case "4":
