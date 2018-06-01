@@ -60,6 +60,4 @@ public interface CenterServer extends Remote {
 	 * @throws RemoteException
 	 */
 	public boolean editRecord(String recordId, String fieldName, String newValue) throws RemoteException;
-
-	
 }
