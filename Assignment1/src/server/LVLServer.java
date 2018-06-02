@@ -45,7 +45,7 @@ public class LVLServer extends UnicastRemoteObject implements CenterServer {
 
 	@Override
 	public boolean createTRecord(String firstName, String lastName, String address, String phone, String specialization,
-			String location) throws RemoteException {
+			String location, String managerId) throws RemoteException {
 		Record objRecord = new Teacher(firstName, lastName, address, phone, specialization, location);
 
 		if (lvlDB.containsKey(lastName.substring(0, 1))) {
@@ -61,9 +61,9 @@ public class LVLServer extends UnicastRemoteObject implements CenterServer {
 			System.out.println("Map key & value" + map.getKey() + "," + map.getValue().size());
 
 		}
-		lvlLogger.mLogger.info("Creating Teacher Record with First Name: "+ firstName + " Last name: "
+		lvlLogger.mLogger.info(managerId + " sent request to create Teacher Record with First Name: "+ firstName + " Last name: "
 				+ lastName + " Address: " + address + " Phone number: " + phone
-				+ " Specialization: " + specialization + '\n');
+				+ " Specialization: " + specialization + " location: " + location + '\n');
 		
 		count++;
 		
@@ -72,7 +72,7 @@ public class LVLServer extends UnicastRemoteObject implements CenterServer {
 
 	@Override
 	public boolean createSRecord(String firstName, String lastName, ArrayList<String> courseRegistered, String status,
-			String statusDate) throws RemoteException {
+			String statusDate, String managerId) throws RemoteException {
 
 		Record objRecord = new Student(firstName, lastName, courseRegistered, status, statusDate);
 
@@ -87,14 +87,14 @@ public class LVLServer extends UnicastRemoteObject implements CenterServer {
 		
 		count++;
 		
-		lvlLogger.mLogger.info("Creating Student Record with First Name: "+ firstName + " Last name: "
+		lvlLogger.mLogger.info(managerId + " sent request to create Student Record with First Name: "+ firstName + " Last name: "
 				+ lastName + " Course: " + courseRegistered + " Status: " + status
 				+ " Status Date: " + statusDate + '\n');
 		return true;
 	}
 
 	@Override
-	public String getRecordCounts() throws RemoteException {
+	public String getRecordCounts(String managerId) throws RemoteException {
 		
 
 		String str = location + " " + count + "\n";
@@ -105,16 +105,19 @@ public class LVLServer extends UnicastRemoteObject implements CenterServer {
 		byte[] message2 = location.getBytes();
 		
 			try {
+				lvlLogger.mLogger.info(managerId + " sent request for total record count" + '\n');
 				socket1 = new DatagramSocket();
 				socket2 = new DatagramSocket();
 				InetAddress address = InetAddress.getByName("localhost");
 				
 				DatagramPacket request1 = new DatagramPacket(message1, message1.length, address, MTLServer.MTLport);
 				socket1.send(request1);
+				lvlLogger.mLogger.info(location + " sever sending request to mtl sever for total record count" + '\n');
 
 				byte[] receive1 = new byte[1000];
 				DatagramPacket reply1 = new DatagramPacket(receive1, receive1.length);
 				socket1.receive(reply1);
+				lvlLogger.mLogger.info("mtl server sent response to " + location + " sever for total record count " + '\n');
 
 				str = str.concat(new String(reply1.getData()));
 				str = str.trim();
@@ -122,10 +125,12 @@ public class LVLServer extends UnicastRemoteObject implements CenterServer {
 
 				DatagramPacket request2 = new DatagramPacket(message2, message2.length, address, DDOServer.DDOport);
 				socket2.send(request2);
-
+				lvlLogger.mLogger.info(location + " sever sending request to ddo sever for total record count" + '\n');
+				
 				byte[] receive2 = new byte[1000];
 				DatagramPacket reply2 = new DatagramPacket(receive2, receive2.length);
 				socket2.receive(reply2);
+				lvlLogger.mLogger.info("ddo server sent response to " + location + " sever for total record count " + '\n');
 
 				str = str.concat(new String(reply2.getData()));
 				str = str.trim();
@@ -149,9 +154,9 @@ public class LVLServer extends UnicastRemoteObject implements CenterServer {
 	}
 
 	@Override
-	public boolean editRecord(String recordId, String fieldName, String newValue) throws RemoteException {
+	public boolean editRecord(String recordId, String fieldName, String newValue, String managerId) throws RemoteException {
 		// TODO add previous value here;
-		lvlLogger.mLogger.info("Editing Record with ID:"+ recordId + " previous value was: " + " "  + "new value is: " + newValue +'\n');
+		lvlLogger.mLogger.info(managerId + " sent request to edit Record with ID:"+ recordId + " previous value was: " + " "  + "new value is: " + newValue +'\n');
 		// TODO Auto-generated method stub
 		return false;
 	}

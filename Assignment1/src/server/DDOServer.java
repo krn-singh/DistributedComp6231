@@ -46,7 +46,7 @@ public class DDOServer extends UnicastRemoteObject implements CenterServer {
 
 	@Override
 	public boolean createTRecord(String firstName, String lastName, String address, String phone, String specialization,
-			String location) throws RemoteException {
+			String location, String managerId) throws RemoteException {
 		Record objRecord = new Teacher(firstName, lastName, address, phone, specialization, location);
 
 		if (ddoDB.containsKey(lastName.substring(0, 1))) {
@@ -56,19 +56,18 @@ public class DDOServer extends UnicastRemoteObject implements CenterServer {
 			alRecord.add(objRecord);
 			ddoDB.put(lastName.substring(0, 1), alRecord);
 		}
-
-		
-		ddoLogger.mLogger.info("Creating Teacher Record with First Name: "+ firstName + " Last name: "
-				+ lastName + " Address: " + address + " Phone number: " + phone
-				+ " Specialization: " + specialization + '\n');
 		
 		count++;
+		//adding the operation to the log file
+		ddoLogger.mLogger.info(managerId + " sent request to create Teacher Record with First Name: "+ firstName + " Last name: "
+						+ lastName + " Address: " + address + " Phone number: " + phone
+						+ " Specialization: " + specialization + " location: " + location + '\n');
 		return true;
 	}
 
 	@Override
 	public boolean createSRecord(String firstName, String lastName, ArrayList<String> courseRegistered, String status,
-			String statusDate) throws RemoteException {
+			String statusDate, String managerId) throws RemoteException {
 
 		Record objRecord = new Student(firstName, lastName, courseRegistered, status, statusDate);
 
@@ -83,15 +82,16 @@ public class DDOServer extends UnicastRemoteObject implements CenterServer {
 		
 		count++;
 		
-		ddoLogger.mLogger.info("Creating Student Record with First Name: "+ firstName + " Last name: "
-				+ lastName + " Course: " + courseRegistered + " Status: " + status
-				+ " Status Date: " + statusDate + '\n');
+		//adding the operation to the log file
+		ddoLogger.mLogger.info(managerId + " sent request to create Student Record with First Name: "+ firstName + " Last name: "
+						+ lastName + " Course: " + courseRegistered + " Status: " + status
+						+ " Status Date: " + statusDate + '\n');
 		
 		return true;
 	}
 
 	@Override
-	public String getRecordCounts() throws RemoteException {
+	public String getRecordCounts(String managerId) throws RemoteException {
 		
 
 		String str = location + " " + count + "\n";
@@ -102,16 +102,19 @@ public class DDOServer extends UnicastRemoteObject implements CenterServer {
 		byte[] message2 = location.getBytes();
 		
 			try {
+				ddoLogger.mLogger.info(managerId + " sent request for total record count" + '\n');
 				socket1 = new DatagramSocket();
 				socket2 = new DatagramSocket();
 				InetAddress address = InetAddress.getByName("localhost");
 				
 				DatagramPacket request1 = new DatagramPacket(message1, message1.length, address, LVLServer.LVLport);
 				socket1.send(request1);
+				ddoLogger.mLogger.info(location + " sever sending request to laval sever for total record count" + '\n');
 
 				byte[] receive1 = new byte[1000];
 				DatagramPacket reply1 = new DatagramPacket(receive1, receive1.length);
 				socket1.receive(reply1);
+				ddoLogger.mLogger.info("laval server sent response to " + location + " sever for total record count " + '\n');
 
 				str = str.concat(new String(reply1.getData()));
 				str = str.trim();
@@ -119,10 +122,12 @@ public class DDOServer extends UnicastRemoteObject implements CenterServer {
 
 				DatagramPacket request2 = new DatagramPacket(message2, message2.length, address, MTLServer.MTLport);
 				socket2.send(request2);
+				ddoLogger.mLogger.info(location + " sever sending request to mtl sever for total record count" + '\n');
 
 				byte[] receive2 = new byte[1000];
 				DatagramPacket reply2 = new DatagramPacket(receive2, receive2.length);
 				socket2.receive(reply2);
+				ddoLogger.mLogger.info("mtl server sent response to " + location + " sever for total record count " + '\n');
 
 				str = str.concat(new String(reply2.getData()));
 				str = str.trim();
@@ -140,14 +145,14 @@ public class DDOServer extends UnicastRemoteObject implements CenterServer {
 				socket2.close();
 			}
 		System.out.println(str);
-		ddoLogger.mLogger.info("Get record count query is used, total count is : \n" + str + '\n');
+		ddoLogger.mLogger.info("Total record count is : \n" + str + '\n');
 		return str;
 	}
 
 	@Override
-	public boolean editRecord(String recordId, String fieldName, String newValue) throws RemoteException {
+	public boolean editRecord(String recordId, String fieldName, String newValue, String managerId) throws RemoteException {
 		// TODO add previous value here;
-		ddoLogger.mLogger.info("Editing Record with ID:"+ recordId + " previous value was: " + " "  + "new value is: " + newValue +'\n');
+		ddoLogger.mLogger.info(managerId + " sent request to edit Record with ID:"+ recordId + " previous value was: " + " "  + "new value is: " + newValue +'\n');
 		// TODO Auto-generated method stub
 		return false;
 	}

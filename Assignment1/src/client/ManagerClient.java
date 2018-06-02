@@ -66,7 +66,7 @@ public class ManagerClient {
 			Registry registry = LocateRegistry.getRegistry(serverId);
 			this.serverObj = (CenterServer) registry.lookup(serverName);
 //			serverObj.createTRecord("Lei", "Shan", "Rue Mackay", "514514", "french", "mtl");
-			System.out.println(serverObj.getRecordCounts());
+//			System.out.println(serverObj.getRecordCounts(recordId));
 			
 		} catch (RemoteException e) {	e.printStackTrace();		}
 		  catch (NotBoundException e) {	e.printStackTrace();		}
@@ -157,12 +157,17 @@ public class ManagerClient {
 				specialization = scan.nextLine();
 			}
 			location = locationMenu(scan);
-			clientLogger.mLogger.info("Creating Teacher Record with First Name: "+ firstName + " Last name: "
+			clientLogger.mLogger.info("Sending request to create Teacher Record with First Name: "+ firstName + " Last name: "
 										+ lastName + " Address: " + address + " Phone number: " + phone
-										+ " Specialization: " + specialization + '\n');
+										+ " Specialization: " + specialization + " location: " + location + '\n');
 //			location = location.toLowerCase();
 //			if(location.equals(recordId.substring(0,3))){
-				serverObj.createTRecord(firstName, lastName, address, phone, specialization, location);
+				if(serverObj.createTRecord(firstName, lastName, address, phone, specialization, location, recordId)) {
+					clientLogger.mLogger.info("Request to create Teacher record completed successfully" +'\n');
+				}
+				else {
+					clientLogger.mLogger.info("Request to create Teacher record failed from the server due to some validation errors" +'\n');
+				}
 //			}
 //			else {
 //				CenterServer tempServer = null;
@@ -190,10 +195,15 @@ public class ManagerClient {
 			status = statusMenu(scan);
 			System.out.println("Enter Status Date (dd/mm/yyyy)");
 			statusDate = scan.nextLine();
-			clientLogger.mLogger.info("Creating Student Record with First Name: "+ firstName + " Last name: "
+			clientLogger.mLogger.info("Sending request to create Student Record with First Name: "+ firstName + " Last name: "
 					+ lastName + " Course: " + courseRegistered + " Status: " + status
 					+ " Status Date: " + statusDate + '\n');
-			serverObj.createSRecord(firstName, lastName, courseRegistered, status, statusDate);
+			if(serverObj.createSRecord(firstName, lastName, courseRegistered, status, statusDate, recordId)) {
+				clientLogger.mLogger.info("Request to create Student record completed successfully" +'\n');
+			}
+			else {
+				clientLogger.mLogger.info("Request to create Student record failed from the server due to some validation errors" +'\n');
+			}
 		} catch (Exception e) {	e.printStackTrace();		}
 	}
 	
@@ -335,8 +345,13 @@ public class ManagerClient {
 			fieldName = scan.nextLine();
 			System.out.println("Enter the new value");
 			newValue = scan.nextLine();
-			clientLogger.mLogger.info("Editing Record with ID:"+ recordId + '\n');
-			serverObj.editRecord(recordId, fieldName, newValue);
+			clientLogger.mLogger.info("Sending request to edit Record with ID:"+ recordId + '\n');
+			if(serverObj.editRecord(recordId, fieldName, newValue, recordId)) {
+				clientLogger.mLogger.info("Request to edit Record completed successfully" +'\n');
+			}
+			else {
+				clientLogger.mLogger.info("Request to edit Record failed from the server due to some validation error" +'\n');
+			}
 		} catch (Exception e) {	e.printStackTrace();		}
 	}
 	
