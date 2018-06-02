@@ -3,7 +3,12 @@
  */
 package server;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -27,12 +32,14 @@ public class LVLServer extends UnicastRemoteObject implements CenterServer {
 	public static HashMap<String, ArrayList<Record>> lvlDB;
 	private static int count;
 	private LogManager lvlLogger;
+	static String location = "lvl";
+	public static int LVLport = 2345;
 
 	public LVLServer() throws Exception {
 		super();
 		lvlDB = new HashMap<String, ArrayList<Record>>();
 		count = 0;
-		lvlLogger = new LogManager("LVL");
+		lvlLogger = new LogManager("lvl");
 	}
 
 	@Override
@@ -72,24 +79,56 @@ public class LVLServer extends UnicastRemoteObject implements CenterServer {
 
 	@Override
 	public String getRecordCounts() throws RemoteException {
-		// TODO Auto-generated method stub
-		for (Map.Entry<String, ArrayList<Record>> map : lvlDB.entrySet()) {
-
-			for (Record eachRec : map.getValue()) {
-				if (returnStringAfterDot(eachRec.getClass().getName(), ".").equals("Student")) {
-					System.out.println("\nRetrieving Student Data");
-					getDataFromRunTimeClass(eachRec);
-
-				} else if (returnStringAfterDot(eachRec.getClass().getName(), ".").equals("Teacher")) {
-					System.out.println("\nRetrieving Teacher Data");
-					getDataFromRunTimeClass(eachRec);
-				}
-			}
-		}
-		System.out.println("\nTotal No.of records retrieved:" + count);
 		
-		lvlLogger.mLogger.info("Get record count query is used, total count is : " + count + '\n');
-		return null;
+
+		String str = location + " " + count + "\n";
+
+		DatagramSocket socket1 = null;
+		DatagramSocket socket2 = null;
+		byte[] message1 = location.getBytes();
+		byte[] message2 = location.getBytes();
+		
+			try {
+				socket1 = new DatagramSocket();
+				socket2 = new DatagramSocket();
+				InetAddress address = InetAddress.getByName("localhost");
+				
+				DatagramPacket request1 = new DatagramPacket(message1, message1.length, address, MTLServer.MTLport);
+				socket1.send(request1);
+
+				byte[] receive1 = new byte[1000];
+				DatagramPacket reply1 = new DatagramPacket(receive1, receive1.length);
+				socket1.receive(reply1);
+
+				str = str.concat(new String(reply1.getData()));
+				str = str.trim();
+				str = str.concat("\n");
+
+				DatagramPacket request2 = new DatagramPacket(message2, message2.length, address, DDOServer.DDOport);
+				socket2.send(request2);
+
+				byte[] receive2 = new byte[1000];
+				DatagramPacket reply2 = new DatagramPacket(receive2, receive2.length);
+				socket2.receive(reply2);
+
+				str = str.concat(new String(reply2.getData()));
+				str = str.trim();
+				str = str.concat("\n");
+				
+			} catch (SocketException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			finally {
+				socket1.close();
+				socket2.close();
+			}
+		System.out.println(str);
+		lvlLogger.mLogger.info("Get record count query is used, total count is : \n" + str + '\n');
+		return str;
 	}
 
 	@Override
@@ -136,11 +175,35 @@ public class LVLServer extends UnicastRemoteObject implements CenterServer {
 	public static void main(String[] args) {
 		
 		try {
-			Registry registry = LocateRegistry.createRegistry(2345);
+			Registry registry = LocateRegistry.createRegistry(LVLport);
 			LVLServer laval = new LVLServer();
-			registry.bind("lvl", laval);
-
+			registry.bind(location, laval);
 			System.out.println("Laval Server is started");
+			
+			DatagramSocket socket = null;
+			try {
+				
+				socket = new DatagramSocket(LVLport);
+				byte[] get = new byte[256];
+				byte[] send = new byte[1000];
+				
+				while(true) {
+					DatagramPacket request = new DatagramPacket(get, get.length);
+					socket.receive(request);
+
+					send = (location + " " + count).getBytes();
+					DatagramPacket reply = new DatagramPacket(send, send.length, request.getAddress(), request.getPort());
+					socket.send(reply);
+				}
+				
+			} catch (SocketException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				socket.close();
+			}
+			
 		} catch (RemoteException e)			{	e.printStackTrace();		}
 		  catch (AlreadyBoundException e) 	{	e.printStackTrace();		}
 		  catch (Exception e) 				{	e.printStackTrace();		}
