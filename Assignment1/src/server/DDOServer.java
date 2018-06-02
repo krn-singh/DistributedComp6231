@@ -20,6 +20,7 @@ import java.util.Map;
 
 import logger.LogManager;
 import utility.Record;
+import utility.Student;
 import utility.Teacher;
 
 /**
@@ -56,25 +57,36 @@ public class DDOServer extends UnicastRemoteObject implements CenterServer {
 			ddoDB.put(lastName.substring(0, 1), alRecord);
 		}
 
-		for (Map.Entry<String, ArrayList<Record>> map : ddoDB.entrySet()) {
-
-			System.out.println("Map key & value" + map.getKey() + "," + map.getValue().size());
-
-		}
+		
 		ddoLogger.mLogger.info("Creating Teacher Record with First Name: "+ firstName + " Last name: "
 				+ lastName + " Address: " + address + " Phone number: " + phone
 				+ " Specialization: " + specialization + '\n');
 		
+		count++;
 		return true;
 	}
 
 	@Override
 	public boolean createSRecord(String firstName, String lastName, ArrayList<String> courseRegistered, String status,
 			String statusDate) throws RemoteException {
-		// TODO Auto-generated method stub
+
+		Record objRecord = new Student(firstName, lastName, courseRegistered, status, statusDate);
+
+		//checking if the key already exists in hash map
+		if (ddoDB.containsKey(lastName.substring(0, 1))) {
+			ddoDB.get(lastName.substring(0, 1)).add(objRecord);
+		} else {
+			ArrayList<Record> alRecord = new ArrayList<Record>();
+			alRecord.add(objRecord);
+			ddoDB.put(lastName.substring(0, 1), alRecord);
+		}
+		
+		count++;
+		
 		ddoLogger.mLogger.info("Creating Student Record with First Name: "+ firstName + " Last name: "
 				+ lastName + " Course: " + courseRegistered + " Status: " + status
 				+ " Status Date: " + statusDate + '\n');
+		
 		return true;
 	}
 

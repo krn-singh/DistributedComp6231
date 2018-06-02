@@ -52,7 +52,8 @@ public class ManagerClient {
 			
 			CenterServer serverObj = (CenterServer) registry.lookup(serverName);
 			
-			serverObj.createTRecord("Lei", "Shan", "Rue Mackay", "514514", "french", "mtl");
+			serverObj.createTRecord("Lei", "Shan", "Rue Mackay", "514514", "french", serverName);
+			serverObj.createTRecord("Lei", "Shapper", "Rue Mackay", "514514", "french", serverName);
 			System.out.println(serverObj.getRecordCounts());
 			
 		} catch (RemoteException e) {	e.printStackTrace();		}
@@ -335,8 +336,19 @@ public class ManagerClient {
 	 */
 	public static void main(String[] args) {
 		
-		ManagerClient client = new ManagerClient("MTL1212");
-		client.fetchServer("MTL", MTL_SERVER_ID);
+		ManagerClient client1 = new ManagerClient("LVL1212");
+		client1.fetchServer("LVL", LVL_SERVER_ID);
+		
+		ManagerClient client3 = new ManagerClient("MTL1212");
+		client3.fetchServer("MTL", MTL_SERVER_ID);
+		
+		ManagerClient client2 = new ManagerClient("DDO1212");
+		client2.fetchServer("DDO", DDO_SERVER_ID);
+		
+		
+		
+//		ManagerClient client3 = new ManagerClient("LVL1212");
+//		client3.fetchServer("LVL", LVL_SERVER_ID);
 //		Scanner scan = new Scanner(System.in);
 //		
 //		StringBuffer menu = new StringBuffer("Select the following options:\n" + 

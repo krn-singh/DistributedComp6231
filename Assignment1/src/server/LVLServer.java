@@ -20,6 +20,7 @@ import java.util.Map;
 
 import logger.LogManager;
 import utility.Record;
+import utility.Student;
 import utility.Teacher;
 
 /**
@@ -64,13 +65,28 @@ public class LVLServer extends UnicastRemoteObject implements CenterServer {
 				+ lastName + " Address: " + address + " Phone number: " + phone
 				+ " Specialization: " + specialization + '\n');
 		
+		count++;
+		
 		return true;
 	}
 
 	@Override
 	public boolean createSRecord(String firstName, String lastName, ArrayList<String> courseRegistered, String status,
 			String statusDate) throws RemoteException {
-		// TODO Auto-generated method stub
+
+		Record objRecord = new Student(firstName, lastName, courseRegistered, status, statusDate);
+
+		//checking if the key already exists in hash map
+		if (lvlDB.containsKey(lastName.substring(0, 1))) {
+			lvlDB.get(lastName.substring(0, 1)).add(objRecord);
+		} else {
+			ArrayList<Record> alRecord = new ArrayList<Record>();
+			alRecord.add(objRecord);
+			lvlDB.put(lastName.substring(0, 1), alRecord);
+		}
+		
+		count++;
+		
 		lvlLogger.mLogger.info("Creating Student Record with First Name: "+ firstName + " Last name: "
 				+ lastName + " Course: " + courseRegistered + " Status: " + status
 				+ " Status Date: " + statusDate + '\n');
@@ -126,6 +142,7 @@ public class LVLServer extends UnicastRemoteObject implements CenterServer {
 				socket1.close();
 				socket2.close();
 			}
+			
 		System.out.println(str);
 		lvlLogger.mLogger.info("Get record count query is used, total count is : \n" + str + '\n');
 		return str;
