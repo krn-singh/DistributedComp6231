@@ -51,7 +51,9 @@ public class ManagerClient {
 			Registry registry = LocateRegistry.getRegistry(serverId);
 			
 			CenterServer serverObj = (CenterServer) registry.lookup(serverName);
+			
 			serverObj.createTRecord("Lei", "Shan", "Rue Mackay", "514514", "french", "mtl");
+			System.out.println(serverObj.getRecordCounts());
 			
 		} catch (RemoteException e) {	e.printStackTrace();		}
 		  catch (NotBoundException e) {	e.printStackTrace();		}
@@ -333,25 +335,27 @@ public class ManagerClient {
 	 */
 	public static void main(String[] args) {
 		
-		Scanner scan = new Scanner(System.in);
-		
-		StringBuffer menu = new StringBuffer("Select the following options:\n" + 
-				 "1>	Create Teacher Record\n" + 
-				 "2>	Create Student Record\n" + 
-				 "3>	Edit Record\n" + 
-				 "4>	Get record count\n" + 
-				 "5>	Exit\n");	
-		
-		System.out.println("Enter the Manager Id");
-		String managerId = scan.nextLine();
-		
-		if (validateManager(managerId)) {
-			ManagerClient client = new ManagerClient(managerId);
-			client.fetchServer("MTL", MTL_SERVER_ID);
-			client.clientLogger.mLogger.info("Manager: " + managerId + " logged in." + '\n');
-			client.mainMenu(scan, menu);
-		} else {
-			System.out.println("Invalid Login Id..... Terminating the system");
-		}			
+		ManagerClient client = new ManagerClient("MTL1212");
+		client.fetchServer("MTL", MTL_SERVER_ID);
+//		Scanner scan = new Scanner(System.in);
+//		
+//		StringBuffer menu = new StringBuffer("Select the following options:\n" + 
+//				 "1>	Create Teacher Record\n" + 
+//				 "2>	Create Student Record\n" + 
+//				 "3>	Edit Record\n" + 
+//				 "4>	Get record count\n" + 
+//				 "5>	Exit\n");	
+//		
+//		System.out.println("Enter the Manager Id");
+//		String managerId = scan.nextLine();
+//		
+//		if (validateManager(managerId)) {
+//			ManagerClient client = new ManagerClient(managerId);
+//			client.fetchServer("MTL", MTL_SERVER_ID);
+//			client.clientLogger.mLogger.info("Manager: " + managerId + " logged in." + '\n');
+//			client.mainMenu(scan, menu);
+//		} else {
+//			System.out.println("Invalid Login Id..... Terminating the system");
+//		}			
 	}
 }
