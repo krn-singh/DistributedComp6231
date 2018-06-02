@@ -10,6 +10,8 @@ import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import logger.LogManager;
+
 import server.CenterServer;
 
 /**
@@ -36,14 +38,34 @@ public class ManagerClient {
 	private String recordId;
 	private String fieldName;
 	private String newValue;
+	private LogManager clientLogger = null;
+	private CenterServer serverObj = null;
+	
+	public ManagerClient(String managerId) {
+		this.recordId = managerId;
+		this.clientLogger = new LogManager(managerId);
+		String serverName = managerId.substring(0, 3);
+		fetchServer(serverName);
+		
+	}
 
-	public void fetchServer(String serverName, int serverId) {
+	public void fetchServer(String serverName) {
+		int serverId;
+		serverName = serverName.toLowerCase();
+		if(serverName.equals("mtl")) {serverId = MTL_SERVER_ID;}
+		else if(serverName.equals("lvl")) {serverId = LVL_SERVER_ID;}
+		else if(serverName.equals("ddo")) {serverId = DDO_SERVER_ID;}
+		else {
+			System.out.println("Incorrect server name");
+			clientLogger.mLogger.info("Incorrect server name");
+			System.exit(0);
+			return;
+		}
 		
 		try {
 			Registry registry = LocateRegistry.getRegistry(serverId);
-			
-			CenterServer serverObj = (CenterServer) registry.lookup(serverName);
-			serverObj.createTRecord("Lei", "Shan", "Rue Mackay", "514514", "french", "mtl");
+			this.serverObj = (CenterServer) registry.lookup(serverName);
+//			serverObj.createTRecord("Lei", "Shan", "Rue Mackay", "514514", "french", "mtl");
 			
 		} catch (RemoteException e) {	e.printStackTrace();		}
 		  catch (NotBoundException e) {	e.printStackTrace();		}
@@ -57,7 +79,7 @@ public class ManagerClient {
 	 * @param managerId Manager Login ID
 	 * @return True/False whether the validation was successfully or not
 	 */
-	public boolean validateManager(String managerId) {
+	public static boolean validateManager(String managerId) {
 		
 		try {
 			if (managerId.length() != 7) {	return false;	}
@@ -76,12 +98,43 @@ public class ManagerClient {
 		return false;
 	}
 	
+	public static boolean validatePhoneNumber(String phoneNumber) {
+		try {
+			if(phoneNumber.length() != 10){
+				System.out.println("Phone number can't be less than 10 digits");
+				return false;
+			}
+			if(!phoneNumber.matches("^[0-9]*$")) {
+				System.out.println("Phone number can't have any characters");
+				return false;
+			}
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		return true;
+	}
+	
+	public static boolean validateSpecialization(String specializationType) {
+		try {
+			specializationType = specializationType.toLowerCase();
+			if(specializationType.equals("french") || specializationType.equals("maths") || specializationType.equals("science")) {
+				return true;
+			}
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("Specialization should be from maths, french or science only");
+		return false;
+	}
+	
 	/**
 	 * Prompts the user for Teacher attributes.
 	 * 
 	 * @param scan Simple text scanner for user input
 	 */
-	public void fetchTRecord(Scanner scan) {
+	public void createTRecord(Scanner scan) {
 		
 		try {
 			System.out.println("Enter First Name:");
@@ -92,9 +145,30 @@ public class ManagerClient {
 			address = scan.nextLine();
 			System.out.println("Enter Phone Number");
 			phone = scan.nextLine();
+			while(!validatePhoneNumber(phone)){
+				System.out.println("Enter Phone Number");
+				phone = scan.nextLine();
+			}
 			System.out.println("Enter Specialization");
 			specialization = scan.nextLine();
+			while(!validateSpecialization(specialization)) {
+				System.out.println("Enter Specialization");
+				specialization = scan.nextLine();
+			}
 			location = locationMenu(scan);
+			clientLogger.mLogger.info("Creating Teacher Record with First Name: "+ firstName + " Last name: "
+										+ lastName + " Address: " + address + " Phone number: " + phone
+										+ " Specialization: " + specialization + '\n');
+//			location = location.toLowerCase();
+//			if(location.equals(recordId.substring(0,3))){
+				serverObj.createTRecord(firstName, lastName, address, phone, specialization, location);
+//			}
+//			else {
+//				CenterServer tempServer = null;
+//				fetchServer(location, clientLogger, tempServer);
+//				tempServer.createTRecord(firstName, lastName, address, phone, specialization, location);
+//			}
+			
 			
 		} catch (Exception e) {	e.printStackTrace();		}
 	}
@@ -104,7 +178,7 @@ public class ManagerClient {
 	 * 
 	 * @param scan Simple text scanner for user input
 	 */
-	public void fetchSRecord(Scanner scan) {
+	public void createSRecord(Scanner scan) {
 		
 		try {
 			System.out.println("Enter First Name:");
@@ -115,6 +189,10 @@ public class ManagerClient {
 			status = statusMenu(scan);
 			System.out.println("Enter Status Date (dd/mm/yyyy)");
 			statusDate = scan.nextLine();
+			clientLogger.mLogger.info("Creating Student Record with First Name: "+ firstName + " Last name: "
+					+ lastName + " Course: " + courseRegistered + " Status: " + status
+					+ " Status Date: " + statusDate + '\n');
+			serverObj.createSRecord(firstName, lastName, courseRegistered, status, statusDate);
 		} catch (Exception e) {	e.printStackTrace();		}
 	}
 	
@@ -256,6 +334,8 @@ public class ManagerClient {
 			fieldName = scan.nextLine();
 			System.out.println("Enter the new value");
 			newValue = scan.nextLine();
+			clientLogger.mLogger.info("Editing Record with ID:"+ recordId + '\n');
+			serverObj.editRecord(recordId, fieldName, newValue);
 		} catch (Exception e) {	e.printStackTrace();		}
 	}
 	
@@ -280,11 +360,11 @@ public class ManagerClient {
 			
 			switch (option) {
 			case "1":
-				fetchTRecord(scan);
+				createTRecord(scan);
 				break;
 
 			case "2":
-				fetchSRecord(scan);
+				createSRecord(scan);
 				break;
 				
 			case "3":
@@ -296,11 +376,13 @@ public class ManagerClient {
 				break;
 				
 			case "5":
+				clientLogger.mLogger.info("Logged Out"+ '\n');
 				System.out.println("Good Bye");
 				System.exit(0);
 				break;
 
 			default:
+				clientLogger.mLogger.info("Client entered Invalid Option for main menu: "+ option + '\n');
 				System.out.println("Invalid option. Try again");
 				mainMenu(scan, menu);
 				break;
@@ -316,9 +398,6 @@ public class ManagerClient {
 	 */
 	public static void main(String[] args) {
 		
-		ManagerClient client = new ManagerClient();
-		client.fetchServer("MTL", MTL_SERVER_ID);
-		
 		Scanner scan = new Scanner(System.in);
 		
 		StringBuffer menu = new StringBuffer("Select the following options:\n" + 
@@ -331,7 +410,9 @@ public class ManagerClient {
 		System.out.println("Enter the Manager Id");
 		String managerId = scan.nextLine();
 		
-		if (client.validateManager(managerId)) {
+		if (validateManager(managerId)) {
+			ManagerClient client = new ManagerClient(managerId);
+			client.clientLogger.mLogger.info("Manager: " + managerId + " logged in." + '\n');
 			client.mainMenu(scan, menu);
 		} else {
 			System.out.println("Invalid Login Id..... Terminating the system");
