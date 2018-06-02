@@ -66,6 +66,7 @@ public class ManagerClient {
 			Registry registry = LocateRegistry.getRegistry(serverId);
 			this.serverObj = (CenterServer) registry.lookup(serverName);
 //			serverObj.createTRecord("Lei", "Shan", "Rue Mackay", "514514", "french", "mtl");
+			System.out.println(serverObj.getRecordCounts());
 			
 		} catch (RemoteException e) {	e.printStackTrace();		}
 		  catch (NotBoundException e) {	e.printStackTrace();		}
@@ -397,7 +398,6 @@ public class ManagerClient {
 	 * @param args (No arguments are needed to launch)
 	 */
 	public static void main(String[] args) {
-		
 		Scanner scan = new Scanner(System.in);
 		
 		StringBuffer menu = new StringBuffer("Select the following options:\n" + 

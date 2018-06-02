@@ -13,24 +13,20 @@ import java.util.ArrayList;
  */
 public class Student extends Record {
 
-	private String recordId;
-	private String firstName;
-	private String lastName;
 	private ArrayList<String> courseRegistered;
 	private String status;
 	private String statusDate;
-	static int id = 100;
+	private String recordId;
+	static int Sid = 100;
 
 	public Student(String firstName, String lastName, ArrayList<String> courseRegistered, String status, String statusDate) {
 
-		super();
-		this.recordId = "ST" + Student.id;
-		this.firstName = firstName;
-		this.lastName = lastName;
+		super(firstName, lastName);
+		this.recordId = "ST" + Student.Sid;
 		this.courseRegistered = courseRegistered;
 		this.status = status;
 		this.statusDate = statusDate;
-		Student.id++;
+		Student.Sid++;
 	}
 	
 	public String getRecordId() {
@@ -38,18 +34,6 @@ public class Student extends Record {
 	}
 	public void setRecordId(String recordId) {
 		this.recordId = "SR"+"1"+Integer.toString((int)(Math.random()*10+30))+Integer.toString((int)(Math.random()*10+50));
-	}
-	public String getFirstName() {
-		return firstName;
-	}
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-	public String getLastName() {
-		return lastName;
-	}
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
 	}
 	public ArrayList<String> getCourseRegistered() {
 		return courseRegistered;
