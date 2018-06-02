@@ -21,7 +21,7 @@ import server.CenterServer;
  * 
  * @author karan
  */
-public class ManagerClient {
+public class ManagerClient extends Thread{
 	
 	private static int MTL_SERVER_ID = 1234;
 	private static int LVL_SERVER_ID = 2345;
@@ -414,6 +414,7 @@ public class ManagerClient {
 	 */
 	public static void main(String[] args) {
 		Scanner scan = new Scanner(System.in);
+		
 		
 		StringBuffer menu = new StringBuffer("Select the following options:\n" + 
 				 "1>	Create Teacher Record\n" + 

@@ -28,7 +28,7 @@ import utility.Student;
  * @author karan
  */
 @SuppressWarnings("serial")
-public class MTLServer extends UnicastRemoteObject implements CenterServer {
+public class MTLServer extends UnicastRemoteObject implements CenterServer,Runnable {
 
 	public static HashMap<String, ArrayList<Record>> mtlDB;
 	private static int count;
@@ -233,6 +233,12 @@ public class MTLServer extends UnicastRemoteObject implements CenterServer {
 		} catch (RemoteException e)			{	e.printStackTrace();		}
 		  catch (AlreadyBoundException e) 	{	e.printStackTrace();		}
 		  catch (Exception e) 				{	e.printStackTrace();		}
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
