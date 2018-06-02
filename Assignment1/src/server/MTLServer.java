@@ -33,14 +33,14 @@ public class MTLServer extends UnicastRemoteObject implements CenterServer {
 	public static HashMap<String, ArrayList<Record>> mtlDB;
 	private static int count;
 	private LogManager mtlLogger;
-	static String location = "MTL";
+	static String location = "mtl";
 	public static int MTLport = 1234;
 
 	public MTLServer() throws Exception {
 		super();
 		mtlDB = new HashMap<String, ArrayList<Record>>();
 		count = 0;
-		mtlLogger = new LogManager("MTL");
+		mtlLogger = new LogManager("mtl");
 	}
 
 	@Override

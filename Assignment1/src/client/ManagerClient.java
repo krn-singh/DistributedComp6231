@@ -39,21 +39,33 @@ public class ManagerClient {
 	private String fieldName;
 	private String newValue;
 	private LogManager clientLogger = null;
+	private CenterServer serverObj = null;
 	
 	public ManagerClient(String managerId) {
 		this.recordId = managerId;
-		this.clientLogger = new LogManager(managerId); 
+		this.clientLogger = new LogManager(managerId);
+		String serverName = managerId.substring(0, 3);
+		fetchServer(serverName);
+		
 	}
 
-	public void fetchServer(String serverName, int serverId) {
+	public void fetchServer(String serverName) {
+		int serverId;
+		serverName = serverName.toLowerCase();
+		if(serverName.equals("mtl")) {serverId = MTL_SERVER_ID;}
+		else if(serverName.equals("lvl")) {serverId = LVL_SERVER_ID;}
+		else if(serverName.equals("ddo")) {serverId = DDO_SERVER_ID;}
+		else {
+			System.out.println("Incorrect server name");
+			clientLogger.mLogger.info("Incorrect server name");
+			System.exit(0);
+			return;
+		}
 		
 		try {
 			Registry registry = LocateRegistry.getRegistry(serverId);
-			
-			CenterServer serverObj = (CenterServer) registry.lookup(serverName);
-			
-			serverObj.createTRecord("Lei", "Shan", "Rue Mackay", "514514", "french", serverName);
-			serverObj.createTRecord("Lei", "Shapper", "Rue Mackay", "514514", "french", serverName);
+			this.serverObj = (CenterServer) registry.lookup(serverName);
+//			serverObj.createTRecord("Lei", "Shan", "Rue Mackay", "514514", "french", "mtl");
 			System.out.println(serverObj.getRecordCounts());
 			
 		} catch (RemoteException e) {	e.printStackTrace();		}
@@ -87,6 +99,37 @@ public class ManagerClient {
 		return false;
 	}
 	
+	public static boolean validatePhoneNumber(String phoneNumber) {
+		try {
+			if(phoneNumber.length() != 10){
+				System.out.println("Phone number can't be less than 10 digits");
+				return false;
+			}
+			if(!phoneNumber.matches("^[0-9]*$")) {
+				System.out.println("Phone number can't have any characters");
+				return false;
+			}
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		return true;
+	}
+	
+	public static boolean validateSpecialization(String specializationType) {
+		try {
+			specializationType = specializationType.toLowerCase();
+			if(specializationType.equals("french") || specializationType.equals("maths") || specializationType.equals("science")) {
+				return true;
+			}
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("Specialization should be from maths, french or science only");
+		return false;
+	}
+	
 	/**
 	 * Prompts the user for Teacher attributes.
 	 * 
@@ -103,12 +146,30 @@ public class ManagerClient {
 			address = scan.nextLine();
 			System.out.println("Enter Phone Number");
 			phone = scan.nextLine();
+			while(!validatePhoneNumber(phone)){
+				System.out.println("Enter Phone Number");
+				phone = scan.nextLine();
+			}
 			System.out.println("Enter Specialization");
 			specialization = scan.nextLine();
+			while(!validateSpecialization(specialization)) {
+				System.out.println("Enter Specialization");
+				specialization = scan.nextLine();
+			}
 			location = locationMenu(scan);
 			clientLogger.mLogger.info("Creating Teacher Record with First Name: "+ firstName + " Last name: "
 										+ lastName + " Address: " + address + " Phone number: " + phone
 										+ " Specialization: " + specialization + '\n');
+//			location = location.toLowerCase();
+//			if(location.equals(recordId.substring(0,3))){
+				serverObj.createTRecord(firstName, lastName, address, phone, specialization, location);
+//			}
+//			else {
+//				CenterServer tempServer = null;
+//				fetchServer(location, clientLogger, tempServer);
+//				tempServer.createTRecord(firstName, lastName, address, phone, specialization, location);
+//			}
+			
 			
 		} catch (Exception e) {	e.printStackTrace();		}
 	}
@@ -132,6 +193,7 @@ public class ManagerClient {
 			clientLogger.mLogger.info("Creating Student Record with First Name: "+ firstName + " Last name: "
 					+ lastName + " Course: " + courseRegistered + " Status: " + status
 					+ " Status Date: " + statusDate + '\n');
+			serverObj.createSRecord(firstName, lastName, courseRegistered, status, statusDate);
 		} catch (Exception e) {	e.printStackTrace();		}
 	}
 	
@@ -274,6 +336,7 @@ public class ManagerClient {
 			System.out.println("Enter the new value");
 			newValue = scan.nextLine();
 			clientLogger.mLogger.info("Editing Record with ID:"+ recordId + '\n');
+			serverObj.editRecord(recordId, fieldName, newValue);
 		} catch (Exception e) {	e.printStackTrace();		}
 	}
 	
@@ -320,7 +383,7 @@ public class ManagerClient {
 				break;
 
 			default:
-				clientLogger.mLogger.info("Client entered Invalid Option: "+ option + '\n');
+				clientLogger.mLogger.info("Client entered Invalid Option for main menu: "+ option + '\n');
 				System.out.println("Invalid option. Try again");
 				mainMenu(scan, menu);
 				break;
@@ -335,39 +398,23 @@ public class ManagerClient {
 	 * @param args (No arguments are needed to launch)
 	 */
 	public static void main(String[] args) {
+		Scanner scan = new Scanner(System.in);
 		
-		ManagerClient client1 = new ManagerClient("LVL1212");
-		client1.fetchServer("LVL", LVL_SERVER_ID);
+		StringBuffer menu = new StringBuffer("Select the following options:\n" + 
+				 "1>	Create Teacher Record\n" + 
+				 "2>	Create Student Record\n" + 
+				 "3>	Edit Record\n" + 
+				 "4>	Get record count\n" + 
+				 "5>	Exit\n");	
 		
-		ManagerClient client3 = new ManagerClient("MTL1212");
-		client3.fetchServer("MTL", MTL_SERVER_ID);
-		
-		ManagerClient client2 = new ManagerClient("DDO1212");
-		client2.fetchServer("DDO", DDO_SERVER_ID);
-		
-		
-		
-//		ManagerClient client3 = new ManagerClient("LVL1212");
-//		client3.fetchServer("LVL", LVL_SERVER_ID);
-//		Scanner scan = new Scanner(System.in);
-//		
-//		StringBuffer menu = new StringBuffer("Select the following options:\n" + 
-//				 "1>	Create Teacher Record\n" + 
-//				 "2>	Create Student Record\n" + 
-//				 "3>	Edit Record\n" + 
-//				 "4>	Get record count\n" + 
-//				 "5>	Exit\n");	
-//		
-//		System.out.println("Enter the Manager Id");
-//		String managerId = scan.nextLine();
-//		
-//		if (validateManager(managerId)) {
-//			ManagerClient client = new ManagerClient(managerId);
-//			client.fetchServer("MTL", MTL_SERVER_ID);
-//			client.clientLogger.mLogger.info("Manager: " + managerId + " logged in." + '\n');
-//			client.mainMenu(scan, menu);
-//		} else {
-//			System.out.println("Invalid Login Id..... Terminating the system");
-//		}			
+		System.out.println("Enter the Manager Id");
+		String managerId = scan.nextLine();
+		if (validateManager(managerId)) {
+			ManagerClient client = new ManagerClient(managerId);
+			client.clientLogger.mLogger.info("Manager: " + managerId + " logged in." + '\n');
+			client.mainMenu(scan, menu);
+		} else {
+			System.out.println("Invalid Login Id..... Terminating the system");
+		}
 	}
 }

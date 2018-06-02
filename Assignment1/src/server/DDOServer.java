@@ -34,14 +34,14 @@ public class DDOServer extends UnicastRemoteObject implements CenterServer {
 	public static HashMap<String, ArrayList<Record>> ddoDB;
 	private static int count;
 	private LogManager ddoLogger;
-	static String location = "DDO";
+	static String location = "ddo";
 	public static int DDOport = 3456;
 
 	public DDOServer() throws Exception {
 		super();
 		ddoDB = new HashMap<String, ArrayList<Record>>();
 		count = 0;
-		ddoLogger = new LogManager("DDO");
+		ddoLogger = new LogManager("ddo");
 	}
 
 	@Override

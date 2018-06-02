@@ -33,14 +33,14 @@ public class LVLServer extends UnicastRemoteObject implements CenterServer {
 	public static HashMap<String, ArrayList<Record>> lvlDB;
 	private static int count;
 	private LogManager lvlLogger;
-	static String location = "LVL";
+	static String location = "lvl";
 	public static int LVLport = 2345;
 
 	public LVLServer() throws Exception {
 		super();
 		lvlDB = new HashMap<String, ArrayList<Record>>();
 		count = 0;
-		lvlLogger = new LogManager("LVL");
+		lvlLogger = new LogManager("lvl");
 	}
 
 	@Override
