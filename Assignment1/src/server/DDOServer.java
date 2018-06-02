@@ -139,7 +139,7 @@ public class DDOServer extends UnicastRemoteObject implements CenterServer {
 		try {
 			Registry registry = LocateRegistry.createRegistry(3456);
 			DDOServer dollard = new DDOServer();
-			registry.bind("DDO", dollard);
+			registry.bind("ddo", dollard);
 
 			System.out.println("Dollard Server is started");
 		} catch (RemoteException e)			{	e.printStackTrace();		}

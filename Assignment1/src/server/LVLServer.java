@@ -138,7 +138,7 @@ public class LVLServer extends UnicastRemoteObject implements CenterServer {
 		try {
 			Registry registry = LocateRegistry.createRegistry(2345);
 			LVLServer laval = new LVLServer();
-			registry.bind("LVL", laval);
+			registry.bind("lvl", laval);
 
 			System.out.println("Laval Server is started");
 		} catch (RemoteException e)			{	e.printStackTrace();		}

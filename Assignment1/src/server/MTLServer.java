@@ -144,7 +144,7 @@ public class MTLServer extends UnicastRemoteObject implements CenterServer {
 		try {
 			Registry registry = LocateRegistry.createRegistry(1234);
 			MTLServer montreal = new MTLServer();
-			registry.bind("MTL", montreal);
+			registry.bind("mtl", montreal);
 
 			System.out.println("Montreal Server is started");
 		} catch (RemoteException e)			{	e.printStackTrace();		}
