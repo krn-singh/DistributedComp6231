@@ -41,6 +41,7 @@ public class DDOServer extends UnicastRemoteObject implements CenterServer {
 	public DDOServer() throws Exception {
 		super();
 		ddoLogger = new LogManager("ddo");
+		ddoLogger.mLogger.setUseParentHandlers(true);
 	}
 
 	@Override
@@ -60,9 +61,7 @@ public class DDOServer extends UnicastRemoteObject implements CenterServer {
 		
 		count++;
 		//adding the operation to the log file
-		ddoLogger.mLogger.info(managerId + " sent request to create Teacher Record with First Name: "+ firstName + " Last name: "
-						+ lastName + " Address: " + address + " Phone number: " + phone
-						+ " Specialization: " + specialization + " location: " + location + '\n');
+		ddoLogger.mLogger.info(managerId + " created Teacher record with values: "+ objRecord + '\n');
 		return true;
 	}
 
@@ -86,9 +85,7 @@ public class DDOServer extends UnicastRemoteObject implements CenterServer {
 		count++;
 		
 		//adding the operation to the log file
-		ddoLogger.mLogger.info(managerId + " sent request to create Student Record with First Name: "+ firstName + " Last name: "
-						+ lastName + " Course: " + courseRegistered + " Status: " + status
-						+ " Status Date: " + statusDate + '\n');
+		ddoLogger.mLogger.info(managerId + " created Student record with values: "+ objRecord + '\n');
 		
 		return true;
 	}
@@ -156,7 +153,7 @@ public class DDOServer extends UnicastRemoteObject implements CenterServer {
 	// Address,phone,specialization(Teacher)
 	@Override
 	public String editRecord(String recordId, String fieldName, String newValue, String managerId) throws RemoteException {
-
+		ddoLogger.mLogger.info(managerId + " sent request to edit Record with ID: "+ recordId +  " new value is: " + newValue +'\n');
 		String key;
 		if (idToLastName.containsKey(recordId))
 			key = idToLastName.get(recordId);
@@ -171,9 +168,11 @@ public class DDOServer extends UnicastRemoteObject implements CenterServer {
 					if (fieldName.equalsIgnoreCase("status")) {
 						output.append(printMessage(((Student) temp).getStatus(), newValue));
 						((Student) temp).setStatus(newValue);
+						ddoLogger.mLogger.info("Record Updated, new value: " + ((Student) temp)  +'\n');
 					} else if (fieldName.equalsIgnoreCase("statusDate")) {
 						output.append(printMessage(((Student) temp).getStatusDate(), newValue));
 						((Student) temp).setStatusDate(newValue);
+						ddoLogger.mLogger.info("Record Updated, new value: " + ((Student) temp)  +'\n');
 					} else {
 						return "The given field name is invalid for student record";
 					}
@@ -181,12 +180,15 @@ public class DDOServer extends UnicastRemoteObject implements CenterServer {
 					if (fieldName.equalsIgnoreCase("address")) {
 						output.append(printMessage(((Teacher) temp).getAddress(), newValue));
 						((Teacher) temp).setAddress(newValue);
+						ddoLogger.mLogger.info("Record Updated, new value: " + ((Teacher) temp)  +'\n');
 					} else if (fieldName.equalsIgnoreCase("phone")) {
 						output.append(printMessage(((Teacher) temp).getPhone(), newValue));
 						((Teacher) temp).setPhone(newValue);
+						ddoLogger.mLogger.info("Record Updated, new value: " + ((Teacher) temp)  +'\n');
 					} else if (fieldName.equalsIgnoreCase("specialization")) {
 						output.append(printMessage(((Teacher) temp).getSpecialization(), newValue));
 						((Teacher) temp).setSpecialization(newValue);
+						ddoLogger.mLogger.info("Record Updated, new value: " + ((Teacher) temp)  +'\n');
 					} else {
 						return "The given field name is invalid for teacher record";
 					}
@@ -194,7 +196,6 @@ public class DDOServer extends UnicastRemoteObject implements CenterServer {
 			}
 		}
 
-		ddoLogger.mLogger.info(managerId + " sent request to edit Record with ID: "+ recordId +  " new value is: " + newValue +'\n');
 		return output.toString();
 	}
 
@@ -205,7 +206,7 @@ public class DDOServer extends UnicastRemoteObject implements CenterServer {
 
 	// Method to add Course registered (Student)
 	public String editRecord(String recordId, String fieldName, ArrayList<String> newValue, String managerId) throws RemoteException {
-
+		ddoLogger.mLogger.info(managerId + " sent request to edit Record with ID: "+ recordId +  " new value is: " + newValue +'\n');
 		String key;
 		if (idToLastName.containsKey(recordId))
 			key = idToLastName.get(recordId);
@@ -217,11 +218,11 @@ public class DDOServer extends UnicastRemoteObject implements CenterServer {
 					&& fieldName.equalsIgnoreCase("courseRegistered")) {
 				output.append(printMessage(((Student) temp).getCourseRegistered().toString(), newValue.toString()));
 				((Student) temp).setCourseRegistered(newValue);
+				ddoLogger.mLogger.info("Record Updated, new value: " + ((Student) temp)  +'\n');
 			} else {
 				return "The given field name is invalid for student record";
 			}
 		}
-		ddoLogger.mLogger.info(managerId + " sent request to edit Record with ID: "+ recordId +  " new value is: " + newValue +'\n');
 
 		return output.toString();
 	}

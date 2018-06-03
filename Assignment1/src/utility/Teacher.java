@@ -58,4 +58,8 @@ public class Teacher extends Record {
 	public void setLocation(String location) {
 		this.location = location;
 	}
+	
+	public String toString() { 
+	    return "Id " + recordId + " First Name: '" + firstName + " Last Name: " + lastName + " address " + address + " phone " + phone + " specialization " + specialization + " location " + location ;
+	}
 }

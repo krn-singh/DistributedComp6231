@@ -10,7 +10,7 @@ public class LogManager {
 		try {
 			mLogger = Logger.getLogger(LogManager.class.getName());
 			fileManager = new FileHandler(name + ".log", true);
-			mLogger.addHandler(fileManager);
+			mLogger.addHandler(fileManager);	
 			mLogger.setUseParentHandlers(false);
 			SimpleFormatter format = new SimpleFormatter();
 			fileManager.setFormatter(format);

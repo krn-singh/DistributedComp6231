@@ -43,6 +43,7 @@ public class MTLServer extends UnicastRemoteObject implements CenterServer {
 	public MTLServer() throws Exception {
 		super();
 		mtlLogger = new LogManager("mtl");
+		mtlLogger.mLogger.setUseParentHandlers(true);
 	}
 
 	@Override
@@ -65,9 +66,7 @@ public class MTLServer extends UnicastRemoteObject implements CenterServer {
 		count++;
 		
 		//adding the operation to the log file
-		mtlLogger.mLogger.info(managerId + " sent request to create Teacher Record with First Name: "+ firstName + " Last name: "
-				+ lastName + " Address: " + address + " Phone number: " + phone
-				+ " Specialization: " + specialization + " location: " + location + '\n');
+		mtlLogger.mLogger.info(managerId + " created Teacher record with values: "+ objRecord + '\n');
 
 		return true;
 	}
@@ -92,9 +91,7 @@ public class MTLServer extends UnicastRemoteObject implements CenterServer {
 		count++;
 
 		//adding the operation to the log file
-		mtlLogger.mLogger.info(managerId + " sent request to create Student Record with First Name: "+ firstName + " Last name: "
-				+ lastName + " Course: " + courseRegistered + " Status: " + status
-				+ " Status Date: " + statusDate + '\n');
+		mtlLogger.mLogger.info(managerId + " created Student record with values: "+ objRecord + '\n');
 
 		return true;
 	}
@@ -162,7 +159,7 @@ public class MTLServer extends UnicastRemoteObject implements CenterServer {
 	// Address,phone,specialization(Teacher)
 	@Override
 	public String editRecord(String recordId, String fieldName, String newValue, String managerId) throws RemoteException {
-
+		mtlLogger.mLogger.info(managerId + " sent request to edit Record with ID: "+ recordId +  " new value is: " + newValue +'\n');
 		String key;
 		if (idToLastName.containsKey(recordId))
 			key = idToLastName.get(recordId);
@@ -177,9 +174,11 @@ public class MTLServer extends UnicastRemoteObject implements CenterServer {
 					if (fieldName.equalsIgnoreCase("status")) {
 						output.append(printMessage(((Student) temp).getStatus(), newValue));
 						((Student) temp).setStatus(newValue);
+						mtlLogger.mLogger.info("Record Updated, new value: " + ((Student) temp)  +'\n');
 					} else if (fieldName.equalsIgnoreCase("statusDate")) {
 						output.append(printMessage(((Student) temp).getStatusDate(), newValue));
 						((Student) temp).setStatusDate(newValue);
+						mtlLogger.mLogger.info("Record Updated, new value: " + ((Student) temp)  +'\n');
 					} else {
 						return "The given field name is invalid for student record";
 					}
@@ -187,20 +186,21 @@ public class MTLServer extends UnicastRemoteObject implements CenterServer {
 					if (fieldName.equalsIgnoreCase("address")) {
 						output.append(printMessage(((Teacher) temp).getAddress(), newValue));
 						((Teacher) temp).setAddress(newValue);
+						mtlLogger.mLogger.info("Record Updated, new value: " + ((Teacher) temp)  +'\n');
 					} else if (fieldName.equalsIgnoreCase("phone")) {
 						output.append(printMessage(((Teacher) temp).getPhone(), newValue));
 						((Teacher) temp).setPhone(newValue);
+						mtlLogger.mLogger.info("Record Updated, new value: " + ((Teacher) temp)  +'\n');
 					} else if (fieldName.equalsIgnoreCase("specialization")) {
 						output.append(printMessage(((Teacher) temp).getSpecialization(), newValue));
 						((Teacher) temp).setSpecialization(newValue);
+						mtlLogger.mLogger.info("Record Updated, new value: " + ((Teacher) temp)  +'\n');
 					} else {
 						return "The given field name is invalid for teacher record";
 					}
 				}
 			}
 		}
-
-		mtlLogger.mLogger.info(managerId + " sent request to edit Record with ID: "+ recordId +  " new value is: " + newValue +'\n');
 		return output.toString();
 	}
 
@@ -211,7 +211,7 @@ public class MTLServer extends UnicastRemoteObject implements CenterServer {
 
 	// Method to add Course registered (Student)
 	public String editRecord(String recordId, String fieldName, ArrayList<String> newValue, String managerId) throws RemoteException {
-
+		mtlLogger.mLogger.info(managerId + " sent request to edit Record with ID: "+ recordId +  " new value is: " + newValue +'\n');
 		String key;
 		if (idToLastName.containsKey(recordId))
 			key = idToLastName.get(recordId);
@@ -223,11 +223,11 @@ public class MTLServer extends UnicastRemoteObject implements CenterServer {
 					&& fieldName.equalsIgnoreCase("courseRegistered")) {
 				output.append(printMessage(((Student) temp).getCourseRegistered().toString(), newValue.toString()));
 				((Student) temp).setCourseRegistered(newValue);
+				mtlLogger.mLogger.info("Record Updated, new value: " + ((Student) temp)  +'\n');
 			} else {
 				return "The given field name is invalid for student record";
 			}
 		}
-		mtlLogger.mLogger.info(managerId + " sent request to edit Record with ID: "+ recordId +  " new value is: " + newValue +'\n');
 
 		return output.toString();
 	}

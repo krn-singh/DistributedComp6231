@@ -184,10 +184,8 @@ public class ManagerClient extends Thread {
 				System.out.println("Request to create Teacher record completed successfully");
 				clientLogger.mLogger.info("Request to create Teacher record completed successfully" + '\n');
 			} else {
-				System.out.println(
-						"Request to create Teacher record failed from the server due to some validation errors");
-				clientLogger.mLogger.info(
-						"Request to create Teacher record failed from the server due to some validation errors" + '\n');
+				System.out.println("Request to create Teacher record failed from the server due to some validation errors");
+				clientLogger.mLogger.info("Request to create Teacher record failed from the server due to some validation errors" + '\n');
 			}
 			// }
 			// else {
@@ -232,8 +230,7 @@ public class ManagerClient extends Thread {
 				System.out.println("Request to create Student record completed successfully");
 				clientLogger.mLogger.info("Request to create Student record completed successfully" + '\n');
 			} else {
-				System.out.println(
-						"Request to create Student record failed from the server due to some validation errors");
+				System.out.println("Request to create Student record failed from the server due to some validation errors");
 				clientLogger.mLogger.info(
 						"Request to create Student record failed from the server due to some validation errors" + '\n');
 			}

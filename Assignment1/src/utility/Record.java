@@ -2,9 +2,9 @@ package utility;
 
 public class Record {
 	
-	private String recordId;
-	private String firstName;
-	private String lastName;
+	protected String recordId;
+	protected String firstName;
+	protected String lastName;
 	static int id = 100;
 	
 	public Record(String firstName, String lastName, String prefix)

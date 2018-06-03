@@ -44,4 +44,8 @@ public class Student extends Record {
 	public void setStatusDate(String statusDate) {
 		this.statusDate = statusDate;
 	}
+	
+	public String toString() { 
+		return "Id " + recordId + " First Name: '" + firstName + " Last Name: " + lastName + " course registered " + courseRegistered + " status " + status + " status date " + statusDate;
+	}
 }
