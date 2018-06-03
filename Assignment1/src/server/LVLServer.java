@@ -30,17 +30,16 @@ import utility.Teacher;
  */
 @SuppressWarnings("serial")
 public class LVLServer extends UnicastRemoteObject implements CenterServer {
-	public static HashMap<String, ArrayList<Record>> lvlDB;
-	private static HashMap<String, String> idToLastName;	
-	private static int count;
+	
+	public static HashMap<String, ArrayList<Record>> lvlDB = new HashMap<String, ArrayList<Record>>();
+	private static HashMap<String, String> idToLastName = new HashMap<String, String>();	
+	private static int count = 0;
 	private LogManager lvlLogger;
 	static String location = "lvl";
 	public static int LVLport = 2345;
 
 	public LVLServer() throws Exception {
 		super();
-		lvlDB = new HashMap<String, ArrayList<Record>>();
-		count = 0;
 		lvlLogger = new LogManager("lvl");
 	}
 

@@ -145,7 +145,7 @@ public class ManagerClient extends Thread {
 	 * @param scan
 	 *            Simple text scanner for user input
 	 */
-	public void createTRecord(Scanner scan) {
+	public void fetchTRecordDetails(Scanner scan) {
 
 		try {
 			System.out.println("Enter First Name:");
@@ -167,26 +167,33 @@ public class ManagerClient extends Thread {
 				specialization = scan.nextLine();
 			}
 			location = locationMenu(scan);
-			clientLogger.mLogger.info("Sending request to create Teacher Record with First Name: "+ firstName + " Last name: "
-										+ lastName + " Address: " + address + " Phone number: " + phone
-										+ " Specialization: " + specialization + " location: " + location + '\n');
-//			location = location.toLowerCase();
-//			if(location.equals(recordId.substring(0,3))){
-				if(serverObj.createTRecord(firstName, lastName, address, phone, specialization, location, managerId)) {
-					clientLogger.mLogger.info("Request to create Teacher record completed successfully" +'\n');
-				}
-				else {
-					clientLogger.mLogger.info("Request to create Teacher record failed from the server due to some validation errors" +'\n');
-				}
-//			}
-//			else {
-//				CenterServer tempServer = null;
-//				fetchServer(location, clientLogger, tempServer);
-//				tempServer.createTRecord(firstName, lastName, address, phone, specialization, location);
-//			}
 			
 			
 		} catch (Exception e) {	e.printStackTrace();}
+	}
+	
+	public void createTRecord() {
+		try {
+			clientLogger.mLogger.info("Sending request to create Teacher Record with First Name: "+ firstName + " Last name: "
+					+ lastName + " Address: " + address + " Phone number: " + phone
+					+ " Specialization: " + specialization + " location: " + location + '\n');
+			//location = location.toLowerCase();
+			//if(location.equals(recordId.substring(0,3))){
+			if(serverObj.createTRecord(firstName, lastName, address, phone, specialization, location, managerId)) {
+			System.out.println("Request to create Teacher record completed successfully");
+			clientLogger.mLogger.info("Request to create Teacher record completed successfully" +'\n');
+			}
+			else {
+			System.out.println("Request to create Teacher record failed from the server due to some validation errors");
+			clientLogger.mLogger.info("Request to create Teacher record failed from the server due to some validation errors" +'\n');
+			}
+			//}
+			//else {
+			//CenterServer tempServer = null;
+			//fetchServer(location, clientLogger, tempServer);
+			//tempServer.createTRecord(firstName, lastName, address, phone, specialization, location);
+			//}
+		} catch(Exception e) {e.printStackTrace();}
 	}
 
 	/**
@@ -195,7 +202,7 @@ public class ManagerClient extends Thread {
 	 * @param scan
 	 *            Simple text scanner for user input
 	 */
-	public void createSRecord(Scanner scan) {
+	public void fetchSRecordDetails(Scanner scan) {
 
 		try {
 			System.out.println("Enter First Name:");
@@ -206,16 +213,24 @@ public class ManagerClient extends Thread {
 			status = statusMenu(scan);
 			System.out.println("Enter Status Date (dd/mm/yyyy)");
 			statusDate = scan.nextLine();
+		} catch (Exception e) {	e.printStackTrace();}
+	}
+	
+	public void createSRecord() {
+		try {
 			clientLogger.mLogger.info("Sending request to create Student Record with First Name: "+ firstName + " Last name: "
 					+ lastName + " Course: " + courseRegistered + " Status: " + status
 					+ " Status Date: " + statusDate + '\n');
 			if(serverObj.createSRecord(firstName, lastName, courseRegistered, status, statusDate, managerId)) {
+				System.out.println("Request to create Student record completed successfully");
 				clientLogger.mLogger.info("Request to create Student record completed successfully" +'\n');
 			}
 			else {
+				System.out.println("Request to create Student record failed from the server due to some validation errors");
 				clientLogger.mLogger.info("Request to create Student record failed from the server due to some validation errors" +'\n');
 			}
-		} catch (Exception e) {	e.printStackTrace();}
+		} catch(Exception e) {e.printStackTrace();}
+		
 	}
 
 	/**
@@ -339,8 +354,7 @@ public class ManagerClient extends Thread {
 					System.out.println("Invalid option. Try again");
 					break;
 				}
-				System.out
-						.println("Select another Course\n" + "1. Maths\n" + "2. French\n" + "3. Science\n" + "4. Exit");
+				System.out.println("Select another Course\n" + "1. Maths\n" + "2. French\n" + "3. Science\n" + "4. Exit");
 				option = scan.nextLine();
 			} while ((Integer.parseInt(option) < 4 && Integer.parseInt(option) > 0) || courseList.isEmpty());
 
@@ -351,7 +365,7 @@ public class ManagerClient extends Thread {
 		return courseList;
 	}
 
-	public String editRecord(Scanner scan) {
+	public String fetchEditRecordDetails(Scanner scan) {
 
 		try {
 			System.out.println("Enter the Record Id");
@@ -361,16 +375,32 @@ public class ManagerClient extends Thread {
 			fieldName = scan.nextLine();
 			System.out.println("Enter the new value");
 			newValue = scan.nextLine();
+		} catch (Exception e) {	e.printStackTrace();}
+		return "return";
+	}
+	
+	public void editRecord() {
+		try {
 			clientLogger.mLogger.info("Sending request to edit Record with ID:"+ recordId + '\n');
 			String response = serverObj.editRecord(recordId, fieldName, newValue, managerId);
 			if(response.equals("The given record id doesn't exist") || response.equals("The given field name is invalid for student record") || response.equals("The given field name is invalid for teacher record")) {
+				System.out.println("Request to edit Record failed from the server, returned response is: " + response);
 				clientLogger.mLogger.info("Request to edit Record failed from the server, returned response is: " + response +'\n');
 			}
 			else {
+				System.out.println("Request to edit Record completed successfully");
 				clientLogger.mLogger.info("Request to edit Record completed successfully" +'\n');
 			}
-		} catch (Exception e) {	e.printStackTrace();}
-		return "return";
+		}catch(Exception e) {e.printStackTrace();}
+	}
+	
+	public void recordsCount() {
+		try {
+			clientLogger.mLogger.info("Sending requested to get the number of records in each server" + '\n');
+			String response = serverObj.getRecordCounts(managerId);
+			System.out.println("Total number of records are " + response + '\n');
+			clientLogger.mLogger.info("Total number of records are " + response + '\n');
+			} catch(Exception e) {e.printStackTrace();}
 	}
 
 	/**
@@ -391,22 +421,22 @@ public class ManagerClient extends Thread {
 			do {
 				switch (option) {
 				case "1":
-					createTRecord(scan);
+					fetchTRecordDetails(scan);
+					createTRecord();
 					break;
 
 				case "2":
-					createSRecord(scan);
+					fetchSRecordDetails(scan);
+					createSRecord();
 					break;
 
 				case "3":
-					System.out.println(editRecord(scan));
+					fetchEditRecordDetails(scan);
+					editRecord();
 					break;
 
 				case "4":
-					System.out.println(serverObj.getRecordCounts(managerId));
-					clientLogger.mLogger
-							.info("Client requested to get the number of records in each server i.e. option " + option
-									+ '\n');
+					recordsCount();
 					break;
 
 				case "5":
@@ -437,91 +467,93 @@ public class ManagerClient extends Thread {
 	public static void main(String[] args) {
 		Scanner scan = new Scanner(System.in);
 
-		ManagerClient objClient1 = new ManagerClient("MTL1430");
-		ManagerClient objClient2 = new ManagerClient("MTL2222");
-		ManagerClient objClient3 = new ManagerClient("DDO1212");
+//		ManagerClient objClient1 = new ManagerClient("MTL1430");
+//		ManagerClient objClient2 = new ManagerClient("MTL2222");
+//		ManagerClient objClient3 = new ManagerClient("DDO1212");
+//
+//		objClient1.start();
+//		objClient2.start();
+//		objClient3.start();
 
-		objClient1.start();
-		objClient2.start();
-		objClient3.start();
-
-		// StringBuffer menu = new StringBuffer("Select the following options:\n" + "1>
-		// Create Teacher Record\n"
-		// + "2> Create Student Record\n" + "3> Edit Record\n" + "4> Get record count\n"
-		// + "5> Exit\n");
-		//
-		// System.out.println("Enter the Manager Id");
-		// String managerId = scan.nextLine();
-		// if (validateManager(managerId)) {
-		// ManagerClient client = new ManagerClient(managerId);
-		// client.clientLogger.mLogger.info("Manager: " + managerId + " logged in." +
-		// '\n');
-		// client.mainMenu(scan, menu);
-		// } else {
-		// System.out.println("Invalid Login Id..... Terminating the system");
-	}
-
-	public void run() {
-
+		 StringBuffer menu = new StringBuffer("Select the following options:\n" + 
+		 "1> Create Teacher Record\n" + 
+		 "2> Create Student Record\n" +
+		 "3> Edit Record\n" +
+		 "4> Get record count\n"+
+		 "5> Exit\n");
 		
-		if (managerId.equals("MTL1430")) {
-			
-			try {
-				serverObj.createSRecord("firstName", "lastName", new ArrayList<String>(), "status", "statusDate", managerId);
-				System.out.println("fsrsrt");
-				serverObj.editRecord("SR100", "statusDate", "active1213", managerId);
-				
-//				serverObj.createSRecord("firstName", "lastName", new ArrayList<String>(), "status", "statusDate");
-				System.out.println("1 created");
-//				System.out.println(serverObj.getRecordCounts());
-//				serverObj.createSRecord("fir", "lastName", new ArrayList<String>(), "status", "statusDate");
-//				System.out.println("2 created");
-//				System.out.println(serverObj.getRecordCounts());
-//				serverObj.createSRecord("firstName5ygy", "lastName", new ArrayList<String>(), "status", "statusDate");
-//				System.out.println("3 created");
-//				System.out.println(serverObj.getRecordCounts());
-//				
-				serverObj.printHashMap();
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		 System.out.println("Enter the Manager Id");
+		 String managerId = scan.nextLine();
+		 if (validateManager(managerId)) {
+		 ManagerClient client = new ManagerClient(managerId);
+		 client.clientLogger.mLogger.info("Manager: " + managerId + " logged in." +
+		 '\n');
+		 client.mainMenu(scan, menu);
+		 } else {
+			 System.out.println("Invalid Login Id..... Terminating the system");
+		 }	
 
-		}
-		else if(managerId.equals("MTL2222")){
-			
-			try {
-				
-				serverObj.editRecord("SR100", "statusDate", "inactive323", managerId);
-//				serverObj.createSRecord("firstName5ygy", "Name", new ArrayList<String>(), "status", "statusDate");
-				System.out.println("4 created");
-//				
-//				System.out.println(serverObj.getRecordCounts());
-				
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-		}
-//		else if(serverId == 2345)
-//		{
+//	public void run() {
+//
+//		
+//		if (managerId.equals("MTL1430")) {
+//			
 //			try {
-//				serverObj.createSRecord("firstNam", "lastNam", new ArrayList<String>(), "status", "statusDate");
+//				serverObj.createSRecord("firstName", "lastName", new ArrayList<String>(), "status", "statusDate", managerId);
+//				System.out.println("fsrsrt");
+//				serverObj.editRecord("SR100", "statusDate", "active1213", managerId);
+//				
+////				serverObj.createSRecord("firstName", "lastName", new ArrayList<String>(), "status", "statusDate");
+//				System.out.println("1 created");
+////				System.out.println(serverObj.getRecordCounts());
+////				serverObj.createSRecord("fir", "lastName", new ArrayList<String>(), "status", "statusDate");
+////				System.out.println("2 created");
+////				System.out.println(serverObj.getRecordCounts());
+////				serverObj.createSRecord("firstName5ygy", "lastName", new ArrayList<String>(), "status", "statusDate");
+////				System.out.println("3 created");
+////				System.out.println(serverObj.getRecordCounts());
+////				
+//				serverObj.printHashMap();
 //			} catch (RemoteException e) {
 //				// TODO Auto-generated catch block
 //				e.printStackTrace();
 //			}
+//
 //		}
-//		else if(serverId == 3456)
-//		{
+//		else if(managerId.equals("MTL2222")){
+//			
 //			try {
-//				serverObj.createSRecord("first", "last", new ArrayList<String>(), "status", "statusDate");
+//				
+//				serverObj.editRecord("SR100", "statusDate", "inactive323", managerId);
+////				serverObj.createSRecord("firstName5ygy", "Name", new ArrayList<String>(), "status", "statusDate");
+//				System.out.println("4 created");
+////				
+////				System.out.println(serverObj.getRecordCounts());
+//				
 //			} catch (RemoteException e) {
 //				// TODO Auto-generated catch block
 //				e.printStackTrace();
 //			}
+//			
 //		}
-
+////		else if(serverId == 2345)
+////		{
+////			try {
+////				serverObj.createSRecord("firstNam", "lastNam", new ArrayList<String>(), "status", "statusDate");
+////			} catch (RemoteException e) {
+////				// TODO Auto-generated catch block
+////				e.printStackTrace();
+////			}
+////		}
+////		else if(serverId == 3456)
+////		{
+////			try {
+////				serverObj.createSRecord("first", "last", new ArrayList<String>(), "status", "statusDate");
+////			} catch (RemoteException e) {
+////				// TODO Auto-generated catch block
+////				e.printStackTrace();
+////			}
+////		}
+//
 	}
 }

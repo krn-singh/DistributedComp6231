@@ -30,9 +30,9 @@ import utility.Teacher;
  */
 @SuppressWarnings("serial")
 public class DDOServer extends UnicastRemoteObject implements CenterServer {
-
-	public static HashMap<String, ArrayList<Record>> ddoDB;
-	private static HashMap<String, String> idToLastName;
+	
+	public static HashMap<String, ArrayList<Record>> ddoDB = new HashMap<String, ArrayList<Record>>();
+	private static HashMap<String, String> idToLastName = new HashMap<String, String>();
 	private static int count;
 	private LogManager ddoLogger;
 	static String location = "ddo";
@@ -40,8 +40,6 @@ public class DDOServer extends UnicastRemoteObject implements CenterServer {
 
 	public DDOServer() throws Exception {
 		super();
-		ddoDB = new HashMap<String, ArrayList<Record>>();
-		count = 0;
 		ddoLogger = new LogManager("ddo");
 	}
 
