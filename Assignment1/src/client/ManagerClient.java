@@ -467,14 +467,6 @@ public class ManagerClient extends Thread {
 	public static void main(String[] args) {
 		Scanner scan = new Scanner(System.in);
 
-//		ManagerClient objClient1 = new ManagerClient("MTL1430");
-//		ManagerClient objClient2 = new ManagerClient("MTL2222");
-//		ManagerClient objClient3 = new ManagerClient("DDO1212");
-//
-//		objClient1.start();
-//		objClient2.start();
-//		objClient3.start();
-
 		 StringBuffer menu = new StringBuffer("Select the following options:\n" + 
 		 "1> Create Teacher Record\n" + 
 		 "2> Create Student Record\n" +
@@ -492,68 +484,71 @@ public class ManagerClient extends Thread {
 		 } else {
 			 System.out.println("Invalid Login Id..... Terminating the system");
 		 }	
+	}
+	
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
 
-//	public void run() {
-//
-//		
-//		if (managerId.equals("MTL1430")) {
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public void setSpecialization(String specialization) {
+		this.specialization = specialization;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public void setStatusDate(String statusDate) {
+		this.statusDate = statusDate;
+	}
+
+	public void setRecordId(String recordId) {
+		this.recordId = recordId;
+	}
+
+	public void setNewValue(String newValue) {
+		this.newValue = newValue;
+	}
+	
+	public void run() {	
+		try {
+			
+			createSRecord();
+			
+//			System.out.println("fsrsrt");
+//			serverObj.editRecord("SR100", "statusDate", "active1213", managerId);
+			
+//			serverObj.createSRecord("firstName", "lastName", new ArrayList<String>(), "status", "statusDate");
+//			System.out.println("1 created");
+//			System.out.println(serverObj.getRecordCounts());
+//			serverObj.createSRecord("fir", "lastName", new ArrayList<String>(), "status", "statusDate");
+//			System.out.println("2 created");
+//			System.out.println(serverObj.getRecordCounts());
+//			serverObj.createSRecord("firstName5ygy", "lastName", new ArrayList<String>(), "status", "statusDate");
+//			System.out.println("3 created");
+//			System.out.println(serverObj.getRecordCounts());
 //			
-//			try {
-//				serverObj.createSRecord("firstName", "lastName", new ArrayList<String>(), "status", "statusDate", managerId);
-//				System.out.println("fsrsrt");
-//				serverObj.editRecord("SR100", "statusDate", "active1213", managerId);
-//				
-////				serverObj.createSRecord("firstName", "lastName", new ArrayList<String>(), "status", "statusDate");
-//				System.out.println("1 created");
-////				System.out.println(serverObj.getRecordCounts());
-////				serverObj.createSRecord("fir", "lastName", new ArrayList<String>(), "status", "statusDate");
-////				System.out.println("2 created");
-////				System.out.println(serverObj.getRecordCounts());
-////				serverObj.createSRecord("firstName5ygy", "lastName", new ArrayList<String>(), "status", "statusDate");
-////				System.out.println("3 created");
-////				System.out.println(serverObj.getRecordCounts());
-////				
-//				serverObj.printHashMap();
-//			} catch (RemoteException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//
-//		}
-//		else if(managerId.equals("MTL2222")){
-//			
-//			try {
-//				
-//				serverObj.editRecord("SR100", "statusDate", "inactive323", managerId);
-////				serverObj.createSRecord("firstName5ygy", "Name", new ArrayList<String>(), "status", "statusDate");
-//				System.out.println("4 created");
-////				
-////				System.out.println(serverObj.getRecordCounts());
-//				
-//			} catch (RemoteException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			
-//		}
-////		else if(serverId == 2345)
-////		{
-////			try {
-////				serverObj.createSRecord("firstNam", "lastNam", new ArrayList<String>(), "status", "statusDate");
-////			} catch (RemoteException e) {
-////				// TODO Auto-generated catch block
-////				e.printStackTrace();
-////			}
-////		}
-////		else if(serverId == 3456)
-////		{
-////			try {
-////				serverObj.createSRecord("first", "last", new ArrayList<String>(), "status", "statusDate");
-////			} catch (RemoteException e) {
-////				// TODO Auto-generated catch block
-////				e.printStackTrace();
-////			}
-////		}
-//
+			serverObj.printHashMap();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 }
