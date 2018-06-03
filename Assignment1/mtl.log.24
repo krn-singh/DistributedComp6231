@@ -1,0 +1,6 @@
+Jun 02, 2018 9:43:24 PM server.MTLServer createTRecord
+INFO: Creating Teacher Record with First Name: Lei Last name: Shan Address: Rue Mackay Phone number: 514514 Specialization: french
+
+Jun 02, 2018 9:43:24 PM server.MTLServer editRecord
+INFO: Editing Record with ID:TR100 previous value was:  new value is: 1234567890
+

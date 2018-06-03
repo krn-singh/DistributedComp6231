@@ -1,0 +1,31 @@
+Jun 02, 2018 4:54:11 PM server.MTLServer getRecordCounts
+INFO: Get record count query is used, total count is : 
+mtl 0
+lvl 0
+ddo 0
+
+
+Jun 02, 2018 4:55:28 PM server.MTLServer createTRecord
+INFO: Creating Teacher Record with First Name: Mandeep Last name: Ahlawat Address: 1234 drdrg  Phone number: 5143457584 Specialization: maths
+
+Jun 02, 2018 4:56:05 PM server.MTLServer getRecordCounts
+INFO: Get record count query is used, total count is : 
+mtl 1
+lvl 0
+ddo 0
+
+
+Jun 02, 2018 5:04:14 PM server.MTLServer getRecordCounts
+INFO: Get record count query is used, total count is : 
+mtl 1
+lvl 0
+ddo 0
+
+
+Jun 02, 2018 5:04:16 PM server.MTLServer getRecordCounts
+INFO: Get record count query is used, total count is : 
+mtl 1
+lvl 0
+ddo 0
+
+

@@ -1,0 +1,9 @@
+Jun 03, 2018 12:15:17 AM server.MTLServer createSRecord
+INFO: Creating Student Record with First Name: firstName Last name: lastName Course: [] Status: status Status Date: statusDate
+
+Jun 03, 2018 12:17:05 AM server.MTLServer createTRecord
+INFO: Creating Teacher Record with First Name: firstName Last name: lastName Address: vfgfggdfg Phone number: status Specialization: statusDate
+
+Jun 03, 2018 12:17:05 AM server.MTLServer editRecord
+INFO: Editing Record with ID:TR100 previous value was:  new value is: active1213
+

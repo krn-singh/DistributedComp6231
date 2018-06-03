@@ -9,32 +9,23 @@ import java.util.ArrayList;
 /**
  * The class provides attributes for the student.
  * 
- * @author karan
+ * @author KVM2
  */
 public class Student extends Record {
 
 	private ArrayList<String> courseRegistered;
 	private String status;
 	private String statusDate;
-	private String recordId;
-	static int Sid = 100;
 
 	public Student(String firstName, String lastName, ArrayList<String> courseRegistered, String status, String statusDate) {
 
-		super(firstName, lastName);
-		this.recordId = "ST" + Student.Sid;
+		super(firstName, lastName, "ST");
 		this.courseRegistered = courseRegistered;
 		this.status = status;
 		this.statusDate = statusDate;
-		Student.Sid++;
 	}
 	
-	public String getRecordId() {
-		return recordId;
-	}
-	public void setRecordId(String recordId) {
-		this.recordId = "SR"+"1"+Integer.toString((int)(Math.random()*10+30))+Integer.toString((int)(Math.random()*10+50));
-	}
+	
 	public ArrayList<String> getCourseRegistered() {
 		return courseRegistered;
 	}

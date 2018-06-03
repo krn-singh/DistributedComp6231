@@ -32,6 +32,7 @@ import utility.Teacher;
 public class DDOServer extends UnicastRemoteObject implements CenterServer {
 
 	public static HashMap<String, ArrayList<Record>> ddoDB;
+	private static HashMap<String, String> idToLastName;
 	private static int count;
 	private LogManager ddoLogger;
 	static String location = "ddo";
@@ -57,7 +58,8 @@ public class DDOServer extends UnicastRemoteObject implements CenterServer {
 			ddoDB.put(lastName.substring(0, 1), alRecord);
 		}
 
-		
+		idToLastName.put(objRecord.getRecordId(), lastName.substring(0,1));
+
 		ddoLogger.mLogger.info("Creating Teacher Record with First Name: "+ firstName + " Last name: "
 				+ lastName + " Address: " + address + " Phone number: " + phone
 				+ " Specialization: " + specialization + '\n');
@@ -81,6 +83,8 @@ public class DDOServer extends UnicastRemoteObject implements CenterServer {
 			ddoDB.put(lastName.substring(0, 1), alRecord);
 		}
 		
+		idToLastName.put(objRecord.getRecordId(), lastName.substring(0,1));
+
 		count++;
 		
 		ddoLogger.mLogger.info("Creating Student Record with First Name: "+ firstName + " Last name: "
@@ -145,11 +149,11 @@ public class DDOServer extends UnicastRemoteObject implements CenterServer {
 	}
 
 	@Override
-	public boolean editRecord(String recordId, String fieldName, String newValue) throws RemoteException {
+	public String editRecord(String recordId, String fieldName, String newValue) throws RemoteException {
 		// TODO add previous value here;
 		ddoLogger.mLogger.info("Editing Record with ID:"+ recordId + " previous value was: " + " "  + "new value is: " + newValue +'\n');
 		// TODO Auto-generated method stub
-		return false;
+		return "";
 	}
 	
 	static String returnStringAfterDot(String value, String a) {
@@ -220,5 +224,17 @@ public class DDOServer extends UnicastRemoteObject implements CenterServer {
 		} catch (RemoteException e)			{	e.printStackTrace();		}
 		  catch (AlreadyBoundException e) 	{	e.printStackTrace();		}
 		  catch (Exception e) 				{	e.printStackTrace();		}
+	}
+
+	@Override
+	public String editRecord(String recordId, String fieldName, ArrayList<String> newValue) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void printHashMap() throws RemoteException {
+		// TODO Auto-generated method stub
+		
 	}
 }

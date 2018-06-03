@@ -1,0 +1,12 @@
+Jun 02, 2018 4:54:11 PM client.ManagerClient main
+INFO: Manager: MTL1212 logged in.
+
+Jun 02, 2018 4:55:28 PM client.ManagerClient createTRecord
+INFO: Creating Teacher Record with First Name: Mandeep Last name: Ahlawat Address: 1234 drdrg  Phone number: 5143457584 Specialization: maths
+
+Jun 02, 2018 4:56:05 PM client.ManagerClient main
+INFO: Manager: MTL1212 logged in.
+
+Jun 02, 2018 8:24:32 PM client.ManagerClient main
+INFO: Manager: MTL1212 logged in.
+

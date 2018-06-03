@@ -1,0 +1,6 @@
+Jun 02, 2018 5:04:14 PM client.ManagerClient main
+INFO: Manager: MTL1213 logged in.
+
+Jun 02, 2018 5:04:16 PM client.ManagerClient mainMenu
+INFO: Client requested to get the number of records in each server i.e. option 4
+

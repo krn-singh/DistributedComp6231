@@ -59,5 +59,9 @@ public interface CenterServer extends Remote {
 	 * @return True/False whether the operation was successful or not
 	 * @throws RemoteException
 	 */
-	public boolean editRecord(String recordId, String fieldName, String newValue) throws RemoteException;
+	public String editRecord(String recordId, String fieldName, String newValue) throws RemoteException;
+	
+	public String editRecord(String recordId, String fieldName, ArrayList<String> newValue) throws RemoteException;
+
+	public void printHashMap() throws RemoteException;
 }

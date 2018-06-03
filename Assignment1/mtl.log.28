@@ -1,0 +1,59 @@
+Jun 02, 2018 11:58:54 PM server.MTLServer createSRecord
+INFO: Creating Student Record with First Name: firstName Last name: lastName Course: [] Status: status Status Date: statusDate
+
+Jun 02, 2018 11:58:54 PM server.MTLServer createSRecord
+INFO: Creating Student Record with First Name: firstName5ygy Last name: Name Course: [] Status: status Status Date: statusDate
+
+Jun 02, 2018 11:58:54 PM server.MTLServer createSRecord
+INFO: Creating Student Record with First Name: fir Last name: lastName Course: [] Status: status Status Date: statusDate
+
+Jun 02, 2018 11:58:54 PM server.MTLServer createSRecord
+INFO: Creating Student Record with First Name: firstName5ygy Last name: lastName Course: [] Status: status Status Date: statusDate
+
+Jun 02, 2018 11:58:55 PM server.MTLServer getRecordCounts
+INFO: Get record count query is used, total count is : 
+mtl 3
+lvl 0
+ddo 0
+
+
+Jun 03, 2018 12:01:25 AM server.MTLServer createSRecord
+INFO: Creating Student Record with First Name: firstName5ygy Last name: Name Course: [] Status: status Status Date: statusDate
+
+Jun 03, 2018 12:01:25 AM server.MTLServer createSRecord
+INFO: Creating Student Record with First Name: firstName Last name: lastName Course: [] Status: status Status Date: statusDate
+
+Jun 03, 2018 12:01:25 AM server.MTLServer getRecordCounts
+INFO: Get record count query is used, total count is : 
+mtl 5
+lvl 0
+ddo 0
+
+
+Jun 03, 2018 12:01:25 AM server.MTLServer getRecordCounts
+INFO: Get record count query is used, total count is : 
+mtl 6
+lvl 0
+ddo 0
+
+
+Jun 03, 2018 12:01:25 AM server.MTLServer createSRecord
+INFO: Creating Student Record with First Name: fir Last name: lastName Course: [] Status: status Status Date: statusDate
+
+Jun 03, 2018 12:01:25 AM server.MTLServer getRecordCounts
+INFO: Get record count query is used, total count is : 
+mtl 7
+lvl 0
+ddo 0
+
+
+Jun 03, 2018 12:01:25 AM server.MTLServer createSRecord
+INFO: Creating Student Record with First Name: firstName5ygy Last name: lastName Course: [] Status: status Status Date: statusDate
+
+Jun 03, 2018 12:01:25 AM server.MTLServer getRecordCounts
+INFO: Get record count query is used, total count is : 
+mtl 8
+lvl 0
+ddo 0
+
+
