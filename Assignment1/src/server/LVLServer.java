@@ -31,6 +31,7 @@ import utility.Teacher;
 @SuppressWarnings("serial")
 public class LVLServer extends UnicastRemoteObject implements CenterServer {
 	public static HashMap<String, ArrayList<Record>> lvlDB;
+	private static HashMap<String, String> idToLastName;	
 	private static int count;
 	private LogManager lvlLogger;
 	static String location = "lvl";
@@ -56,14 +57,17 @@ public class LVLServer extends UnicastRemoteObject implements CenterServer {
 			lvlDB.put(lastName.substring(0, 1), alRecord);
 		}
 
-		for (Map.Entry<String, ArrayList<Record>> map : lvlDB.entrySet()) {
+//		for (Map.Entry<String, ArrayList<Record>> map : lvlDB.entrySet()) {
+//
+//			System.out.println("Map key & value" + map.getKey() + "," + map.getValue().size());
+//
+//		}
+		
+		idToLastName.put(objRecord.getRecordId(), lastName.substring(0,1));
 
-			System.out.println("Map key & value" + map.getKey() + "," + map.getValue().size());
 
-		}
-		lvlLogger.mLogger.info(managerId + " sent request to create Teacher Record with First Name: "+ firstName + " Last name: "
-				+ lastName + " Address: " + address + " Phone number: " + phone
-				+ " Specialization: " + specialization + " location: " + location + '\n');
+		lvlLogger.mLogger.info("Creating Teacher Record with First Name: "+ firstName + " Last name: " + lastName + " Address: " +
+			address + " Phone number: " + phone + " Specialization: " + specialization + " location: " + location + '\n');
 		
 		count++;
 		
@@ -85,6 +89,8 @@ public class LVLServer extends UnicastRemoteObject implements CenterServer {
 			lvlDB.put(lastName.substring(0, 1), alRecord);
 		}
 		
+		idToLastName.put(objRecord.getRecordId(), lastName.substring(0,1));
+
 		count++;
 		
 		lvlLogger.mLogger.info(managerId + " sent request to create Student Record with First Name: "+ firstName + " Last name: "
@@ -96,7 +102,6 @@ public class LVLServer extends UnicastRemoteObject implements CenterServer {
 	@Override
 	public String getRecordCounts(String managerId) throws RemoteException {
 		
-
 		String str = location + " " + count + "\n";
 
 		DatagramSocket socket1 = null;
@@ -153,12 +158,95 @@ public class LVLServer extends UnicastRemoteObject implements CenterServer {
 		return str;
 	}
 
+	// Method to edit status,statusdate(Student) &&
+	// Address,phone,specialization(Teacher)
 	@Override
-	public boolean editRecord(String recordId, String fieldName, String newValue, String managerId) throws RemoteException {
-		// TODO add previous value here;
-		lvlLogger.mLogger.info(managerId + " sent request to edit Record with ID:"+ recordId + " previous value was: " + " "  + "new value is: " + newValue +'\n');
-		// TODO Auto-generated method stub
-		return false;
+	public String editRecord(String recordId, String fieldName, String newValue, String managerId) throws RemoteException {
+
+		String key;
+		if (idToLastName.containsKey(recordId))
+			key = idToLastName.get(recordId);
+		else
+			return "The given record id doesn't exist";
+
+		StringBuilder output = new StringBuilder();
+		for (Record temp : lvlDB.get(key)) {
+			String id = temp.getRecordId();
+			if (id.equalsIgnoreCase(recordId)) {
+				if (recordId.startsWith("ST")) {
+					if (fieldName.equalsIgnoreCase("status")) {
+						output.append(printMessage(((Student) temp).getStatus(), newValue));
+						((Student) temp).setStatus(newValue);
+					} else if (fieldName.equalsIgnoreCase("statusDate")) {
+						output.append(printMessage(((Student) temp).getStatusDate(), newValue));
+						((Student) temp).setStatusDate(newValue);
+					} else {
+						return "The given field name is invalid for student record";
+					}
+				} else if (recordId.startsWith("TR")) {
+					if (fieldName.equalsIgnoreCase("address")) {
+						output.append(printMessage(((Teacher) temp).getAddress(), newValue));
+						((Teacher) temp).setAddress(newValue);
+					} else if (fieldName.equalsIgnoreCase("phone")) {
+						output.append(printMessage(((Teacher) temp).getPhone(), newValue));
+						((Teacher) temp).setPhone(newValue);
+					} else if (fieldName.equalsIgnoreCase("specialization")) {
+						output.append(printMessage(((Teacher) temp).getSpecialization(), newValue));
+						((Teacher) temp).setSpecialization(newValue);
+					} else {
+						return "The given field name is invalid for teacher record";
+					}
+				}
+			}
+		}
+
+		lvlLogger.mLogger.info(managerId + " sent request to edit Record with ID: "+ recordId +  " new value is: " + newValue +'\n');
+		return output.toString();
+	}
+
+	public String printMessage(String str1, String str2) {
+		return "Old Value:" + str1 + " " + " New value updated:" + str2;
+
+	}
+
+	// Method to add Course registered (Student)
+	public String editRecord(String recordId, String fieldName, ArrayList<String> newValue, String managerId) throws RemoteException {
+
+		String key;
+		if (idToLastName.containsKey(recordId))
+			key = idToLastName.get(recordId);
+		else
+			return "The given record id doesn't exist";
+		StringBuilder output = new StringBuilder();
+		for (Record temp : lvlDB.get(key)) {
+			if (temp.getRecordId() == recordId && recordId.startsWith("ST")
+					&& fieldName.equalsIgnoreCase("courseRegistered")) {
+				output.append(printMessage(((Student) temp).getCourseRegistered().toString(), newValue.toString()));
+				((Student) temp).setCourseRegistered(newValue);
+			} else {
+				return "The given field name is invalid for student record";
+			}
+		}
+		lvlLogger.mLogger.info(managerId + " sent request to edit Record with ID: "+ recordId +  " new value is: " + newValue +'\n');
+
+		return output.toString();
+	}
+
+	public void printHashMap() throws RemoteException {
+				 
+		for (Map.Entry<String, ArrayList<Record>> map : lvlDB.entrySet()) {
+				
+				 System.out.println("Key: " + map.getKey());
+				 for(Record r:map.getValue()) {
+					 System.out.println();
+					 if(r.getRecordId().startsWith("ST"))
+						 System.out.println(String.format("LN: %s\nFN: %s\nID: %s\nStatus: %s\nStatus Date: %s\n",r.getLastName(),r.getFirstName(),r.getRecordId(), ((Student)r).getStatus(), ((Student)r).getStatusDate()));
+					 else if(r.getRecordId().startsWith("TR"))
+						 System.out.println(String.format("LN: %s\nFN: %s\nID: %s\naddress: %s\nphone: %s\n",r.getLastName(),r.getFirstName(),r.getRecordId(), ((Teacher)r).getAddress(), ((Teacher)r).getPhone()));
+				 }
+				System.out.println();
+				 }
+
 	}
 	
 	static String returnStringAfterDot(String value, String a) {
@@ -230,4 +318,5 @@ public class LVLServer extends UnicastRemoteObject implements CenterServer {
 		  catch (AlreadyBoundException e) 	{	e.printStackTrace();		}
 		  catch (Exception e) 				{	e.printStackTrace();		}
 	}
+
 }
