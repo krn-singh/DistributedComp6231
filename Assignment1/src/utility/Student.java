@@ -9,35 +9,23 @@ import java.util.ArrayList;
 /**
  * The class provides attributes for the student.
  * 
- * @author karan
+ * @author KVM2
  */
-public class Student {
+public class Student extends Record {
 
-	private String recordId;
-	private String firstName;
-	private String lastName;
 	private ArrayList<String> courseRegistered;
 	private String status;
 	private String statusDate;
+
+	public Student(String firstName, String lastName, ArrayList<String> courseRegistered, String status, String statusDate) {
+
+		super(firstName, lastName, "ST");
+		this.courseRegistered = courseRegistered;
+		this.status = status;
+		this.statusDate = statusDate;
+	}
 	
-	public String getRecordId() {
-		return recordId;
-	}
-	public void setRecordId(String recordId) {
-		this.recordId = "SR"+"1"+Integer.toString((int)(Math.random()*10+30))+Integer.toString((int)(Math.random()*10+50));
-	}
-	public String getFirstName() {
-		return firstName;
-	}
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-	public String getLastName() {
-		return lastName;
-	}
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
+	
 	public ArrayList<String> getCourseRegistered() {
 		return courseRegistered;
 	}
@@ -55,5 +43,9 @@ public class Student {
 	}
 	public void setStatusDate(String statusDate) {
 		this.statusDate = statusDate;
+	}
+	
+	public String toString() { 
+		return "Id " + recordId + " First Name: '" + firstName + " Last Name: " + lastName + " course registered " + courseRegistered + " status " + status + " status date " + statusDate;
 	}
 }

@@ -23,10 +23,11 @@ public interface CenterServer extends Remote {
 	 * @param phone Contact number
 	 * @param specialization Subject being taught by the teacher e.g. french, maths, etc
 	 * @param location One of the three locations i.e. mtl, lvl, ddo
+	 * @param managerId to log details in the server
 	 * @return True/False whether the operation was successful or not
 	 * @throws RemoteException
 	 */
-	public boolean createTRecord(String firstName, String lastName, String address, String phone, String specialization, String location) throws RemoteException;
+	public boolean createTRecord(String firstName, String lastName, String address, String phone, String specialization, String location, String managerId) throws RemoteException;
 	
 	/**
 	 * Creates a Student record with the information passed and returns True/False 
@@ -40,7 +41,7 @@ public interface CenterServer extends Remote {
 	 * @return True/False whether the operation was successful or not
 	 * @throws RemoteException
 	 */
-	public boolean createSRecord(String firstName, String lastName, ArrayList<String> courseRegistered, String status, String statusDate) throws RemoteException;
+	public boolean createSRecord(String firstName, String lastName, ArrayList<String> courseRegistered, String status, String statusDate, String managerId) throws RemoteException;
 	
 	/**
 	 * Evaluates the total number of records(teacher and student) at all the centers
@@ -48,7 +49,7 @@ public interface CenterServer extends Remote {
 	 * @return total number of records
 	 * @throws RemoteException
 	 */
-	public String getRecordCounts() throws RemoteException;
+	public String getRecordCounts(String managerId) throws RemoteException;
 	
 	/**
 	 * Edits the record with the given recordId and replaces the new field with older one.
@@ -59,7 +60,9 @@ public interface CenterServer extends Remote {
 	 * @return True/False whether the operation was successful or not
 	 * @throws RemoteException
 	 */
-	public boolean editRecord(String recordId, String fieldName, String newValue) throws RemoteException;
-
+	public String editRecord(String recordId, String fieldName, String newValue, String managerId) throws RemoteException;
 	
+	public String editRecord(String recordId, String fieldName, ArrayList<String> newValue, String managerId) throws RemoteException;
+
+	public void printHashMap() throws RemoteException;
 }
