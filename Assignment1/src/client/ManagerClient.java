@@ -8,8 +8,6 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Scanner;
 
 import logger.LogManager;
@@ -44,9 +42,14 @@ public class ManagerClient extends Thread {
 	private LogManager clientLogger = null;
 	private CenterServer serverObj = null;
 	private String managerId;
+	private String targetServerName;
 	public static int testOption;
 	public static int increment = 0;
 
+	public ManagerClient() {
+
+	}
+	
 	public ManagerClient(String managerId) {
 		this.managerId = managerId;
 		this.clientLogger = new LogManager(managerId);
@@ -84,8 +87,7 @@ public class ManagerClient extends Thread {
 	/**
 	 * Validates the manager Id
 	 * 
-	 * @param managerId
-	 *            Manager Login ID
+	 * @param managerId Manager Login ID
 	 * @return True/False whether the validation was successfully or not
 	 */
 	public static boolean validateManager(String managerId) {
@@ -146,8 +148,7 @@ public class ManagerClient extends Thread {
 	/**
 	 * Prompts the user for Teacher attributes.
 	 * 
-	 * @param scan
-	 *            Simple text scanner for user input
+	 * @param scan Simple text scanner for user input
 	 */
 	public void fetchTRecordDetails(Scanner scan) {
 
@@ -174,8 +175,9 @@ public class ManagerClient extends Thread {
 				System.out.println("Enter Specialization");
 				specialization = scan.nextLine();
 			}
-			location = locationMenu(scan);
-
+			System.out.println(managerId);
+			location = managerId.substring(0,3);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -186,8 +188,6 @@ public class ManagerClient extends Thread {
 			clientLogger.mLogger.info("Sending request to create Teacher Record with First Name: " + firstName
 					+ " Last name: " + lastName + " Address: " + address + " Phone number: " + phone
 					+ " Specialization: " + specialization + " location: " + location + '\n');
-			// location = location.toLowerCase();
-			// if(location.equals(recordId.substring(0,3))){
 			if (serverObj.createTRecord(firstName, lastName, address, phone, specialization, location, managerId)) {
 				System.out.println("Request to create Teacher record completed successfully");
 				clientLogger.mLogger.info("Request to create Teacher record completed successfully" + '\n');
@@ -197,13 +197,6 @@ public class ManagerClient extends Thread {
 				clientLogger.mLogger.info(
 						"Request to create Teacher record failed from the server due to some validation errors" + '\n');
 			}
-			// }
-			// else {
-			// CenterServer tempServer = null;
-			// fetchServer(location, clientLogger, tempServer);
-			// tempServer.createTRecord(firstName, lastName, address, phone, specialization,
-			// location);
-			// }
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -212,8 +205,7 @@ public class ManagerClient extends Thread {
 	/**
 	 * Prompts the user for Student attributes.
 	 * 
-	 * @param scan
-	 *            Simple text scanner for user input
+	 * @param scan Simple text scanner for user input
 	 */
 	public void fetchSRecordDetails(Scanner scan) {
 
@@ -262,7 +254,7 @@ public class ManagerClient extends Thread {
 	 *            Simple text scanner for user input
 	 * @return Location of the teacher
 	 */
-	public String locationMenu(Scanner scan) {
+/*	public String locationMenu(Scanner scan) {
 
 		String location = "";
 		try {
@@ -293,7 +285,7 @@ public class ManagerClient extends Thread {
 		}
 
 		return location;
-	}
+	}*/
 
 	/**
 	 * Prompts the user for Student status.
@@ -456,11 +448,71 @@ public class ManagerClient extends Thread {
 		try {
 			clientLogger.mLogger.info("Sending requested to get the number of records in each server" + '\n');
 			String response = serverObj.getRecordCounts(managerId);
-			System.out.println("Total number of records are " + response + '\n');
+			System.out.println("Total number of records are\n" + response + '\n');
 			clientLogger.mLogger.info("Total number of records are " + response + '\n');
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void fetchTransferRecordDetails(Scanner scan) {
+
+		try {
+
+			System.out.println("Enter the recordID");
+			recordId = scan.nextLine();
+			
+			// Field validation for Student
+
+			if ((recordId.length() > 2) && (recordId.substring(0, 2).equals("ST"))
+					&& (recordId.toString().matches(".*\\d+.*"))) {
+				do {
+					System.out.println("Enter a valid target server name (mtl, ddo or lvl)");
+					targetServerName = scan.nextLine();
+				} while (!targetServerName.equalsIgnoreCase("mtl") && !targetServerName.equalsIgnoreCase("ddo") 
+						&& !targetServerName.equalsIgnoreCase("lvl"));
+			}
+
+			// Field validation for Teacher
+
+			else if ((recordId.length() > 2) && (recordId.substring(0, 2).equals("TR"))
+					&& (recordId.toString().matches(".*\\d+.*"))) {
+				do {
+					System.out.println("Enter a valid target server name (mtl, ddo or lvl)");
+					targetServerName = scan.nextLine();
+				} while (!targetServerName.equalsIgnoreCase("mtl") && !targetServerName.equalsIgnoreCase("ddo") 
+						&& !targetServerName.equalsIgnoreCase("lvl"));
+			}
+
+			/*
+			 * Error cases 1.If id is not starting with "TR"/"SR" 2.If id contains only
+			 * alphabets
+			 */
+			else {
+				System.out.println("Please enter a valid TR/SR record");
+				fetchTransferRecordDetails(scan);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void transferRecord() {
+		try {
+			clientLogger.mLogger.info("Transfering the record "+recordId +" from "+ managerId.substring(0, 3) +" to "+ targetServerName + '\n');
+			
+			if (serverObj.transferRecord(managerId, recordId, targetServerName)) {
+				System.out.println("Request to transfer record completed successfully");
+				clientLogger.mLogger.info("Request to transfer record completed successfully" + '\n');
+			} else {
+				System.out.println("Request to transfer record failed");
+				clientLogger.mLogger.info("Request to transfer record failed" + '\n');
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	/**
@@ -500,6 +552,13 @@ public class ManagerClient extends Thread {
 					break;
 
 				case "5":
+					do {
+						fetchTransferRecordDetails(scan);
+					} while (targetServerName.equalsIgnoreCase(managerId.substring(0,3)));					
+					transferRecord();
+					break;
+					
+				case "6":
 					clientLogger.mLogger.info("Logged Out" + '\n');
 					System.out.println("Good Bye");
 					System.exit(0);
@@ -527,63 +586,70 @@ public class ManagerClient extends Thread {
 	public static void main(String[] args) {
 		Scanner scan = new Scanner(System.in);
 
-		System.out.println("Please select one of the options \n 1.Run the program \n2.Enter Testing Mode");
-		int inputFromUser = scan.nextInt();
+		try {
+			System.out.println("Please select one of the options \n1.Run the program \n2.Enter Testing Mode");
+			int inputFromUser = scan.nextInt();
 
-		if (inputFromUser == 2) {
+			if (inputFromUser == 2) {
 
-			do {
-				System.out.println(
-						"Please select one of the Tests \n 1.Edit a record at same time\n2.Fetching record count while creating a record\n3.Concurrency Test\n4.Exit");
-				testOption = scan.nextInt();
-				if (testOption == 1) {
-					ManagerClient obj1 = new ManagerClient("MTL1111");
-					obj1.start();
-					ManagerClient obj2 = new ManagerClient("MTL2222");
-					obj2.start();
-					System.out.println("Testing done");
-					main(args);
+				do {
+					System.out.println(
+							"Please select one of the Tests \n 1.Edit a record at same time\n2.Fetching record count while creating a record\n3.Concurrency Test\n4.Exit");
+					testOption = scan.nextInt();
+					if (testOption == 1) {
+						ManagerClient obj1 = new ManagerClient("MTL1111");
+						obj1.start();
+						ManagerClient obj2 = new ManagerClient("MTL2222");
+						obj2.start();
+						System.out.println("Testing done");
+						main(args);
 
-				} else if (testOption == 2) {
-					ManagerClient obj3 = new ManagerClient("LVL3333");
-					obj3.start();
-					ManagerClient obj4 = new ManagerClient("LVL4444");
-					obj4.start();
+					} else if (testOption == 2) {
+						ManagerClient obj3 = new ManagerClient("LVL3333");
+						obj3.start();
+						ManagerClient obj4 = new ManagerClient("LVL4444");
+						obj4.start();
 
-				} else if (testOption == 3) {
+					} else if (testOption == 3) {
 
-					ManagerClient obj5 = new ManagerClient("MTL5555");
-					obj5.start();
-					ManagerClient obj6 = new ManagerClient("LVL6666");
-					obj6.start();
-					ManagerClient obj7 = new ManagerClient("DDO7777");
-					obj7.start();
+						ManagerClient obj5 = new ManagerClient("MTL5555");
+						obj5.start();
+						ManagerClient obj6 = new ManagerClient("LVL6666");
+						obj6.start();
+						ManagerClient obj7 = new ManagerClient("DDO7777");
+						obj7.start();
 
-				} else if (testOption != 4) {
-					System.out.println("Please choose valid option");
-				}
+					} else if (testOption != 4) {
+						System.out.println("Please choose valid option");
+					}
 
-			} while (testOption != 4);
-			System.out.println("Exiting from Testing Suite");
-			System.exit(0);
+				} while (testOption != 4);
+				System.out.println("Exiting from Testing Suite");
+				System.exit(0);
 
-		}
-
-		else if (inputFromUser == 1) {
-			Scanner scanNew = new Scanner(System.in);
-			StringBuffer menu = new StringBuffer("Select the following options:\n" + "1> Create Teacher Record\n"
-					+ "2> Create Student Record\n" + "3> Edit Record\n" + "4> Get record count\n" + "5> Exit\n");
-
-			System.out.println("Enter the Manager Id");
-			String managerId = scanNew.nextLine();
-			if (validateManager(managerId)) {
-				ManagerClient client = new ManagerClient(managerId);
-				client.clientLogger.mLogger.info("Manager: " + managerId + " logged in." + '\n');
-				client.mainMenu(scanNew, menu);
-			} else {
-				System.out.println("Invalid Login Id..... Terminating the system");
 			}
-		}
+
+			else if (inputFromUser == 1) {
+				Scanner scanNew = new Scanner(System.in);
+				StringBuffer menu = new StringBuffer("Select the following options:\n" + "1> Create Teacher Record\n"
+						+ "2> Create Student Record\n" + "3> Edit Record\n" + "4> Get record count\n" + "5> Transfer record\n"+"6> Exit\n");
+
+				System.out.println("Enter the Manager Id");
+				ManagerClient obj = new ManagerClient();
+				obj.managerId = scanNew.nextLine();
+				if (validateManager(obj.managerId)) {
+					ManagerClient client = new ManagerClient(obj.managerId);
+					client.clientLogger.mLogger.info("Manager: " + obj.managerId + " logged in." + '\n');
+					client.mainMenu(scanNew, menu);
+				} else {
+					System.out.println("Invalid Login Id..... Terminating the system");
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			scan.close();
+		}	
 
 	}
 
@@ -661,7 +727,6 @@ public class ManagerClient extends Thread {
 				try {
 					serverObj.createSRecord("first", "last", new ArrayList<String>(), "Active", "12/12/12", "LVL3333");
 				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 

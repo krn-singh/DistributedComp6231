@@ -298,10 +298,92 @@ public class MTLServer extends UnicastRemoteObject implements CenterServer {
 					DatagramPacket request = new DatagramPacket(get, get.length);
 					socket.receive(request);
 
-					send = (location + " " + count).getBytes();
-					DatagramPacket reply = new DatagramPacket(send, send.length, request.getAddress(),
-							request.getPort());
-					socket.send(reply);
+					String requestContent = new String(request.getData()).trim();
+					String[] requestChunks = requestContent.split("\\|");
+
+					if (requestContent.startsWith("ST") || requestContent.startsWith("TR")) {
+
+						String recordId;
+						String firstName;
+						String lastName;
+						Record objRecord;
+						switch (requestContent.substring(0, 2)) {
+						case "ST":
+							recordId = requestChunks[0];
+							firstName = requestChunks[1];
+							lastName = requestChunks[2];
+							ArrayList<String> courseRegistered = new ArrayList<String>();
+							for (int i = 0; i < requestChunks[3].split(",").length; i++) {
+								courseRegistered.add(requestChunks[3].split(",")[i]);
+							}
+							String status = requestChunks[4];
+							String statusDate = requestChunks[5];
+							objRecord = new Student(firstName, lastName, courseRegistered, status, statusDate);
+
+							if (mtlDB.containsKey(lastName.substring(0, 1))) {
+								// Synchronizing array list for particular key of hashmap
+								synchronized (mtlDB.get(lastName).subList(0, 1)) {
+									mtlDB.get(lastName.substring(0, 1)).add(objRecord);
+								}
+							} else {
+								ArrayList<Record> alRecord = new ArrayList<Record>();
+								alRecord.add(objRecord);
+								mtlDB.put(lastName.substring(0, 1), alRecord);
+							}
+
+							// use the old recordID
+							objRecord.setRecordId(recordId);
+							idToLastName.put(objRecord.getRecordId(), lastName.substring(0, 1));
+
+							count++;
+							// adding the operation to the log file
+							montreal.mtlLogger.mLogger
+									.info(" New Student record transfered with values: " + objRecord + '\n');
+
+							break;
+
+						case "TR":
+							recordId = requestChunks[0];
+							firstName = requestChunks[1];
+							lastName = requestChunks[2];
+							String address = requestChunks[3];
+							String phone = requestChunks[4];
+							String specialization = requestChunks[5];
+							String location = requestChunks[6];
+							objRecord = new Teacher(firstName, lastName, address, phone, specialization, location);
+
+							if (mtlDB.containsKey(lastName.substring(0, 1))) {
+								// Synchronizing array list for particular key of hashmap
+								synchronized (mtlDB.get(lastName).subList(0, 1)) {
+									mtlDB.get(lastName.substring(0, 1)).add(objRecord);
+								}
+							} else {
+								ArrayList<Record> alRecord = new ArrayList<Record>();
+								alRecord.add(objRecord);
+								mtlDB.put(lastName.substring(0, 1), alRecord);
+							}
+
+							// use the old recordID
+							objRecord.setRecordId(recordId);
+							idToLastName.put(objRecord.getRecordId(), lastName.substring(0, 1));
+
+							count++;
+							// adding the operation to the log file
+							montreal.mtlLogger.mLogger
+									.info(" New Teacher record transfered with values: " + objRecord + '\n');
+							break;
+						}
+
+						send = ("success").getBytes();
+						DatagramPacket reply = new DatagramPacket(send, send.length, request.getAddress(),
+								request.getPort());
+						socket.send(reply);
+					} else {
+						send = (location + " " + count).getBytes();
+						DatagramPacket reply = new DatagramPacket(send, send.length, request.getAddress(),
+								request.getPort());
+						socket.send(reply);
+					}
 				}
 
 			} catch (SocketException e) {
@@ -319,6 +401,90 @@ public class MTLServer extends UnicastRemoteObject implements CenterServer {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public boolean transferRecord(String managerId, String recordId, String targetCenterName) throws RemoteException {
+
+		mtlLogger.mLogger.info(managerId + " sent request to transfer Record with ID: " + recordId + " to center: "
+				+ targetCenterName + '\n');
+		String key;
+		if (idToLastName.containsKey(recordId))
+			key = idToLastName.get(recordId);
+		else {
+			mtlLogger.mLogger.info("Record couldn't be updated as record value: " + recordId + " doesnt exist" + "\n");
+			return false;
+		}
+
+		synchronized (mtlDB.get(key)) {
+
+			for (int i = 0; i < mtlDB.get(key).size(); i++) {
+
+				Record temp = mtlDB.get(key).get(i);
+				String id = temp.getRecordId();
+
+				if (id.equalsIgnoreCase(recordId)) {
+
+					DatagramSocket socket = null;
+					String transferContent = "";
+
+					if (recordId.startsWith("ST")) {
+						String courses = "";
+						for (String course : ((Student) temp).getCourseRegistered()) {
+							courses += course + ",";
+						}
+						courses = courses.substring(0, courses.length() - 1);
+						transferContent = id + "|" + ((Student) temp).getFirstName() + "|"
+								+ ((Student) temp).getLastName() + "|" + courses + "|" + ((Student) temp).getStatus()
+								+ "|" + ((Student) temp).getStatusDate();
+					} else if (recordId.startsWith("TR")) {
+						transferContent = id + "|" + ((Teacher) temp).getFirstName() + "|"
+								+ ((Teacher) temp).getLastName() + "|" + ((Teacher) temp).getAddress() + "|"
+								+ ((Teacher) temp).getPhone() + "|" + ((Teacher) temp).getSpecialization() + "|"
+								+ ((Teacher) temp).getLocation();
+					}
+
+					byte[] message = transferContent.getBytes();
+
+					try {
+						mtlLogger.mLogger.info(managerId + " sent request for record transfer" + '\n');
+						socket = new DatagramSocket();
+						InetAddress address = InetAddress.getByName("localhost");
+
+						DatagramPacket request = new DatagramPacket(message, message.length, address,
+								targetCenterName.equalsIgnoreCase("lvl") ? LVLServer.LVLport : DDOServer.DDOport);
+						socket.send(request);
+						mtlLogger.mLogger.info(location + " sever sending request to " + targetCenterName
+								+ " sever for record transfer" + '\n');
+
+						byte[] receive = new byte[1000];
+						DatagramPacket reply = new DatagramPacket(receive, receive.length);
+						socket.receive(reply);
+						mtlLogger.mLogger.info(targetCenterName + " server sent response to " + location
+								+ " sever regarding the record transfer " + '\n');
+
+						String replyStr = new String(reply.getData()).trim();
+
+						if (replyStr.equals("success")) {
+							mtlDB.get(key).remove(i);
+							count--;
+							idToLastName.remove(recordId);
+						} else {
+							return false;
+						}
+
+					} catch (SocketException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					} finally {
+						socket.close();
+					}
+				}
+			}
+		}
+
+		return true;
 	}
 
 }
